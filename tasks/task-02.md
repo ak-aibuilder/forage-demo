@@ -1,9 +1,5 @@
 # Enriched Index Query Interface and Tools
 
-## Schedule
-
-Sunday, 11:30 AM to 1:00 PM (1.5 hours)
-
 ## Codex Model + Effort
 
 GPT-5.6 Terra, medium effort

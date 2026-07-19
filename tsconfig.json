@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node", "jest"]
+  },
+  "include": [
+    "src/shared/**/*.ts",
+    "src/enrichment/**/*.ts",
+    "tests/test_enrichment_module.ts"
+  ]
+}

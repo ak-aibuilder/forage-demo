@@ -1,9 +1,5 @@
 # CSV Ingestion and Enrichment Module
 
-## Schedule
-
-Sunday, 10:00 AM to 11:30 AM (1.5 hours)
-
 ## Codex Model + Effort
 
 GPT-5.6 Terra, high effort

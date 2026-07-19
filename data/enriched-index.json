@@ -1,0 +1,1643 @@
+{
+  "schemaVersion": "1.0",
+  "sourcePath": "/Users/akalidindi/Dev/forage-demo/data/apparel.csv",
+  "generatedAt": "2026-07-19T22:42:07.835Z",
+  "products": [
+    {
+      "handle": "ocean-blue-shirt",
+      "title": "Ocean Blue Shirt",
+      "bodyHtml": "Ocean blue cotton shirt with a narrow collar and buttons down the front and long sleeves. Comfortable fit and tiled kalidoscope patterns. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "men"
+      ],
+      "price": 50,
+      "imageSrc": "https://burst.shopifycdn.com/photos/young-man-in-bright-fashion_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 50,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 50,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "cotton"
+      ],
+      "useCaseTags": [
+        "casual"
+      ],
+      "aestheticStyle": [
+        "patterned"
+      ],
+      "seasonalRelevance": [],
+      "functionalAttributes": [
+        "button_front",
+        "long_sleeves",
+        "narrow_collar",
+        "comfortable_fit"
+      ],
+      "substituteCandidates": [
+        "chequered-red-shirt",
+        "white-cotton-shirt"
+      ],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.8,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.55
+      }
+    },
+    {
+      "handle": "classic-varsity-top",
+      "title": "Classic Varsity Top",
+      "bodyHtml": "Womens casual varsity top, This grey and black buttoned top is a sport-inspired piece complete with an embroidered letter. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 60,
+      "imageSrc": "https://burst.shopifycdn.com/photos/casual-fashion-woman_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Small"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 60,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Small"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 60,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        },
+        {
+          "sku": "",
+          "optionValues": [
+            "Medium"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 60,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        },
+        {
+          "sku": "",
+          "optionValues": [
+            "Large"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 60,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [],
+      "useCaseTags": [
+        "casual",
+        "sport_inspired_wear"
+      ],
+      "aestheticStyle": [
+        "varsity",
+        "sporty"
+      ],
+      "seasonalRelevance": [],
+      "functionalAttributes": [
+        "buttoned_closure",
+        "embroidered_letter_detail"
+      ],
+      "substituteCandidates": [],
+      "confidenceScores": {
+        "materialComposition": 0,
+        "useCaseTags": 1,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 0,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0
+      }
+    },
+    {
+      "handle": "yellow-wool-jumper",
+      "title": "Yellow Wool Jumper",
+      "bodyHtml": "Knitted jumper in a soft wool blend with low dropped shoulders and wide sleeves and think cuffs. Perfect for keeping warm during Fall. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 80,
+      "imageSrc": "https://burst.shopifycdn.com/photos/autumn-photographer-taking-picture_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 80,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 80,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "wool_blend"
+      ],
+      "useCaseTags": [
+        "casual",
+        "fall_layering"
+      ],
+      "aestheticStyle": [
+        "relaxed_silhouette",
+        "cozy_knitwear"
+      ],
+      "seasonalRelevance": [
+        "fall",
+        "cool weather"
+      ],
+      "functionalAttributes": [
+        "warmth",
+        "soft_feel"
+      ],
+      "substituteCandidates": [],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.7,
+        "aestheticStyle": 0.8,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.9
+      }
+    },
+    {
+      "handle": "floral-white-top",
+      "title": "Floral White Top",
+      "bodyHtml": "Stylish sleeveless white top with a floral pattern. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 75,
+      "imageSrc": "https://burst.shopifycdn.com/photos/city-woman-fashion_925x@2x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 75,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 75,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [],
+      "useCaseTags": [
+        "casual"
+      ],
+      "aestheticStyle": [
+        "floral",
+        "white"
+      ],
+      "seasonalRelevance": [
+        "warm weather"
+      ],
+      "functionalAttributes": [
+        "sleeveless"
+      ],
+      "substituteCandidates": [],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.6,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 0.7,
+        "functionalAttributes": 1,
+        "substituteCandidates": 1
+      }
+    },
+    {
+      "handle": "striped-silk-blouse",
+      "title": "Striped Silk Blouse",
+      "bodyHtml": "Ultra-stylish black and red striped silk blouse with buckle collar and matching button pants. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 50,
+      "imageSrc": "https://burst.shopifycdn.com/photos/striped-blouse-fashion_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 50,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 50,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "silk"
+      ],
+      "useCaseTags": [
+        "fashion"
+      ],
+      "aestheticStyle": [
+        "striped",
+        "black_and_red",
+        "stylish"
+      ],
+      "seasonalRelevance": [],
+      "functionalAttributes": [
+        "buckle_collar",
+        "matching_button_pants"
+      ],
+      "substituteCandidates": [
+        "silk-summer-top",
+        "striped-skirt-and-top"
+      ],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.7,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 0,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.7
+      }
+    },
+    {
+      "handle": "classic-leather-jacket",
+      "title": "Classic Leather Jacket",
+      "bodyHtml": "Womans zipped leather jacket. Adjustable belt for a comfortable fit, complete with shoulder pads and front zip pocket. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 80,
+      "imageSrc": "https://burst.shopifycdn.com/photos/leather-jacket-and-tea_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 80,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 80,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "leather"
+      ],
+      "useCaseTags": [
+        "casual"
+      ],
+      "aestheticStyle": [
+        "classic"
+      ],
+      "seasonalRelevance": [
+        "cool weather"
+      ],
+      "functionalAttributes": [
+        "zip_closure",
+        "adjustable_belt",
+        "shoulder_pads",
+        "front_zip_pocket"
+      ],
+      "substituteCandidates": [],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.7,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 0.7,
+        "functionalAttributes": 1,
+        "substituteCandidates": 1
+      }
+    },
+    {
+      "handle": "dark-denim-top",
+      "title": "Dark Denim Top",
+      "bodyHtml": "Classic dark denim top with chest pockets, long sleeves with buttoned cuffs, and a ripped hem effect.",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 60,
+      "imageSrc": "https://burst.shopifycdn.com/photos/young-female-models-denim_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 60,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 60,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "denim"
+      ],
+      "useCaseTags": [
+        "casual",
+        "everyday"
+      ],
+      "aestheticStyle": [
+        "classic",
+        "distressed",
+        "dark_denim"
+      ],
+      "seasonalRelevance": [],
+      "functionalAttributes": [
+        "chest_pockets",
+        "buttoned_cuffs",
+        "long_sleeves"
+      ],
+      "substituteCandidates": [],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.7,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 1
+      }
+    },
+    {
+      "handle": "navy-sport-jacket",
+      "title": "Navy Sports Jacket",
+      "bodyHtml": "Long-sleeved navy waterproof jacket in thin, polyester fabric with a soft mesh inside. The durable water-repellent finish means you'll be kept comfortable and protected when out in all weathers.",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "men"
+      ],
+      "price": 60,
+      "imageSrc": "https://burst.shopifycdn.com/photos/mens-fall-fashion-jacket_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 60,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 60,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "polyester",
+        "mesh"
+      ],
+      "useCaseTags": [
+        "outdoor",
+        "sports"
+      ],
+      "aestheticStyle": [
+        "sporty"
+      ],
+      "seasonalRelevance": [
+        "all-weather"
+      ],
+      "functionalAttributes": [
+        "waterproof",
+        "durable_water_repellent_finish",
+        "long_sleeves",
+        "mesh_lined",
+        "thin_fabric"
+      ],
+      "substituteCandidates": [
+        "zipped-jacket",
+        "olive-green-jacket",
+        "dark-winter-jacket",
+        "classic-leather-jacket"
+      ],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.85,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.65
+      }
+    },
+    {
+      "handle": "dark-winter-jacket",
+      "title": "Soft Winter Jacket",
+      "bodyHtml": "Thick black winter jacket, with soft fleece lining. Perfect for those cold weather days.",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 50,
+      "imageSrc": "https://burst.shopifycdn.com/photos/smiling-woman-on-snowy-afternoon_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 50,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 50,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "fleece"
+      ],
+      "useCaseTags": [
+        "cold_weather",
+        "winter"
+      ],
+      "aestheticStyle": [
+        "black"
+      ],
+      "seasonalRelevance": [
+        "winter"
+      ],
+      "functionalAttributes": [
+        "fleece_lined",
+        "thick_construction"
+      ],
+      "substituteCandidates": [],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 1,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.9
+      }
+    },
+    {
+      "handle": "black-leather-bag",
+      "title": "Black Leather Bag",
+      "bodyHtml": "Womens black leather bag, with ample space. Can be worn over the shoulder, or remove straps to carry in your hand. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 30,
+      "imageSrc": "https://burst.shopifycdn.com/photos/black-bag-over-the-shoulder_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 30,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 30,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "leather"
+      ],
+      "useCaseTags": [
+        "shoulder_carry",
+        "hand_carry"
+      ],
+      "aestheticStyle": [
+        "black_leather"
+      ],
+      "seasonalRelevance": [],
+      "functionalAttributes": [
+        "ample_space",
+        "removable_straps",
+        "shoulder_carry_option",
+        "hand_carry_option"
+      ],
+      "substituteCandidates": [],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 1,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 1
+      }
+    },
+    {
+      "handle": "zipped-jacket",
+      "title": "Zipped Jacket",
+      "bodyHtml": "Dark navy and light blue men's zipped waterproof jacket with an outer zipped chestpocket for easy storeage.",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "men"
+      ],
+      "price": 65,
+      "imageSrc": "https://burst.shopifycdn.com/photos/menswear-blue-zip-up-jacket_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 65,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 65,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [],
+      "useCaseTags": [
+        "men's_outerwear",
+        "wet_weather_wear"
+      ],
+      "aestheticStyle": [
+        "two_tone_blue",
+        "color_blocked"
+      ],
+      "seasonalRelevance": [
+        "rainy weather"
+      ],
+      "functionalAttributes": [
+        "waterproof",
+        "zip_front_closure",
+        "zippered_chest_pocket"
+      ],
+      "substituteCandidates": [
+        "navy-sport-jacket"
+      ],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.85,
+        "aestheticStyle": 0.9,
+        "seasonalRelevance": 0.75,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.65
+      }
+    },
+    {
+      "handle": "silk-summer-top",
+      "title": "Silk Summer Top",
+      "bodyHtml": "Silk womens top with short sleeves and number pattern.",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 70,
+      "imageSrc": "https://burst.shopifycdn.com/photos/young-hip-woman-at-carnival_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 70,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 70,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "silk"
+      ],
+      "useCaseTags": [
+        "summer_wear"
+      ],
+      "aestheticStyle": [
+        "number_pattern"
+      ],
+      "seasonalRelevance": [
+        "summer"
+      ],
+      "functionalAttributes": [
+        "short_sleeves"
+      ],
+      "substituteCandidates": [
+        "striped-silk-blouse",
+        "floral-white-top"
+      ],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.9,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.7
+      }
+    },
+    {
+      "handle": "longsleeve-cotton-top",
+      "title": "Long Sleeve Cotton Top",
+      "bodyHtml": "Black cotton womens top, with long sleeves, no collar and a thick hem. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 50,
+      "imageSrc": "https://burst.shopifycdn.com/photos/woman-outside-brownstone_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 50,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 50,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "cotton"
+      ],
+      "useCaseTags": [
+        "everyday_casual"
+      ],
+      "aestheticStyle": [
+        "minimalist"
+      ],
+      "seasonalRelevance": [
+        "transitional weather"
+      ],
+      "functionalAttributes": [
+        "long_sleeves",
+        "collarless_design",
+        "thick_hem"
+      ],
+      "substituteCandidates": [],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.7,
+        "aestheticStyle": 0.7,
+        "seasonalRelevance": 0.6,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.9
+      }
+    },
+    {
+      "handle": "chequered-red-shirt",
+      "title": "Chequered Red Shirt",
+      "bodyHtml": "Classic mens plaid flannel shirt with long sleeves, in chequered style, with two chest pockets.",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "men"
+      ],
+      "price": 50,
+      "imageSrc": "https://burst.shopifycdn.com/photos/red-plaid-shirt_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 50,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 50,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "flannel"
+      ],
+      "useCaseTags": [
+        "menswear",
+        "casual"
+      ],
+      "aestheticStyle": [
+        "classic",
+        "plaid",
+        "chequered"
+      ],
+      "seasonalRelevance": [
+        "cool weather"
+      ],
+      "functionalAttributes": [
+        "long_sleeves",
+        "two_chest_pockets"
+      ],
+      "substituteCandidates": [
+        "ocean-blue-shirt",
+        "white-cotton-shirt",
+        "longsleeve-cotton-top"
+      ],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.85,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 0.7,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.65
+      }
+    },
+    {
+      "handle": "white-cotton-shirt",
+      "title": "White Cotton Shirt",
+      "bodyHtml": "Plain white cotton long sleeved shirt with loose collar. Small buttons and front pocket. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 30,
+      "imageSrc": "https://burst.shopifycdn.com/photos/smiling-woman-poses_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 30,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 30,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "cotton"
+      ],
+      "useCaseTags": [
+        "everyday",
+        "casual",
+        "business_casual",
+        "job_interview"
+      ],
+      "aestheticStyle": [
+        "plain",
+        "minimalist",
+        "polished",
+        "neutral"
+      ],
+      "seasonalRelevance": [],
+      "functionalAttributes": [
+        "long_sleeves",
+        "loose_collar",
+        "button_front",
+        "front_pocket"
+      ],
+      "substituteCandidates": [
+        "ocean-blue-shirt",
+        "longsleeve-cotton-top",
+        "chequered-red-shirt"
+      ],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.8,
+        "aestheticStyle": 0.9,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.7,
+        "useCaseTags.business_casual": 0.6,
+        "useCaseTags.job_interview": 0.6,
+        "aestheticStyle.polished": 0.6,
+        "aestheticStyle.neutral": 0.6
+      }
+    },
+    {
+      "handle": "olive-green-jacket",
+      "title": "Olive Green Jacket",
+      "bodyHtml": "Loose fitting olive green jacket with buttons and large pockets. Multicoloured pattern on the front of the shoulders.",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 65,
+      "imageSrc": "https://burst.shopifycdn.com/photos/urban-fashion_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 65,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 65,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [],
+      "useCaseTags": [
+        "casual",
+        "outerwear"
+      ],
+      "aestheticStyle": [
+        "olive_green",
+        "multicoloured_shoulder_pattern",
+        "loose_fit"
+      ],
+      "seasonalRelevance": [
+        "cool weather"
+      ],
+      "functionalAttributes": [
+        "button_front",
+        "large_pockets",
+        "loose_fit"
+      ],
+      "substituteCandidates": [
+        "zipped-jacket",
+        "navy-sport-jacket",
+        "dark-winter-jacket",
+        "classic-leather-jacket"
+      ],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.72,
+        "aestheticStyle": 0.96,
+        "seasonalRelevance": 0.65,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.58
+      }
+    },
+    {
+      "handle": "blue-silk-tuxedo",
+      "title": "Blue Silk Tuxedo",
+      "bodyHtml": "Blue silk tuxedo with marbled aquatic pattern and dark lining. Sleeves are complete with rounded hem and black buttons.",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "men"
+      ],
+      "price": 70,
+      "imageSrc": "https://burst.shopifycdn.com/photos/man-adjusts-blue-tuxedo-bowtie_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 70,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 70,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "silk"
+      ],
+      "useCaseTags": [
+        "formalwear",
+        "evening_occasions"
+      ],
+      "aestheticStyle": [
+        "blue",
+        "marbled_aquatic_pattern",
+        "formal"
+      ],
+      "seasonalRelevance": [],
+      "functionalAttributes": [
+        "dark_lining",
+        "black_button_details",
+        "rounded_sleeve_hems"
+      ],
+      "substituteCandidates": [
+        "navy-sport-jacket"
+      ],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.85,
+        "aestheticStyle": 0.95,
+        "seasonalRelevance": 0,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.7
+      }
+    },
+    {
+      "handle": "red-sports-tee",
+      "title": "Red Sports Tee",
+      "bodyHtml": "Women's red sporty t-shirt with colorful details on the sleeves and a small white pocket.",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 50,
+      "imageSrc": "https://burst.shopifycdn.com/photos/womens-red-t-shirt_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 50,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 50,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [],
+      "useCaseTags": [
+        "casual",
+        "athletic_wear"
+      ],
+      "aestheticStyle": [
+        "sporty",
+        "red",
+        "colorful_sleeve_details"
+      ],
+      "seasonalRelevance": [],
+      "functionalAttributes": [
+        "small_chest_pocket"
+      ],
+      "substituteCandidates": [
+        "classic-varsity-top",
+        "ocean-blue-shirt"
+      ],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.8,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.6
+      }
+    },
+    {
+      "handle": "striped-skirt-and-top",
+      "title": "Striped Skirt and Top",
+      "bodyHtml": "Black cotton top with matching striped skirt. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "women"
+      ],
+      "price": 50,
+      "imageSrc": "https://burst.shopifycdn.com/photos/woman-in-the-city_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 50,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 50,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [
+        "cotton"
+      ],
+      "useCaseTags": [
+        "women's_outfit"
+      ],
+      "aestheticStyle": [
+        "striped",
+        "black"
+      ],
+      "seasonalRelevance": [],
+      "functionalAttributes": [
+        "matching_set"
+      ],
+      "substituteCandidates": [],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 1,
+        "aestheticStyle": 1,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 0.9
+      }
+    },
+    {
+      "handle": "led-high-tops",
+      "title": "LED High Tops",
+      "bodyHtml": "Black high top shoes with green LED lights in the sole, tied up with laces and a buckle. ",
+      "vendor": "partners-demo",
+      "type": "",
+      "tags": [
+        "men"
+      ],
+      "price": 80,
+      "imageSrc": "https://burst.shopifycdn.com/photos/putting-on-your-shoes_925x.jpg",
+      "variant": {
+        "sku": "",
+        "optionValues": [
+          "Default Title"
+        ],
+        "grams": 0,
+        "inventoryTracker": "",
+        "inventoryQuantity": 1,
+        "inventoryPolicy": "deny",
+        "fulfillmentService": "manual",
+        "price": 80,
+        "compareAtPrice": null,
+        "requiresShipping": true,
+        "taxable": true,
+        "barcode": "",
+        "image": "",
+        "weightUnit": "kg",
+        "taxCode": ""
+      },
+      "variants": [
+        {
+          "sku": "",
+          "optionValues": [
+            "Default Title"
+          ],
+          "grams": 0,
+          "inventoryTracker": "",
+          "inventoryQuantity": 1,
+          "inventoryPolicy": "deny",
+          "fulfillmentService": "manual",
+          "price": 80,
+          "compareAtPrice": null,
+          "requiresShipping": true,
+          "taxable": true,
+          "barcode": "",
+          "image": "",
+          "weightUnit": "kg",
+          "taxCode": ""
+        }
+      ],
+      "materialComposition": [],
+      "useCaseTags": [
+        "casual",
+        "nightlife"
+      ],
+      "aestheticStyle": [
+        "futuristic",
+        "streetwear"
+      ],
+      "seasonalRelevance": [],
+      "functionalAttributes": [
+        "green_led_sole_lights",
+        "lace_up_closure",
+        "buckle_closure",
+        "high_top_design"
+      ],
+      "substituteCandidates": [],
+      "confidenceScores": {
+        "materialComposition": 1,
+        "useCaseTags": 0.7,
+        "aestheticStyle": 0.75,
+        "seasonalRelevance": 1,
+        "functionalAttributes": 1,
+        "substituteCandidates": 1
+      }
+    }
+  ]
+}

@@ -1,9 +1,5 @@
 # Cart Agent ReAct Loop
 
-## Schedule
-
-Sunday, 1:00 PM to 4:00 PM (3 hours)
-
 ## Codex Model + Effort
 
 GPT-5.6 Sol, high effort

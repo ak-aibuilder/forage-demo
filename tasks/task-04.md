@@ -1,9 +1,5 @@
 # Substitution, Replanning, and Gap Reporting
 
-## Schedule
-
-Sunday, 4:00 PM to 6:00 PM (2 hours)
-
 ## Codex Model + Effort
 
 GPT-5.6 Sol, medium effort

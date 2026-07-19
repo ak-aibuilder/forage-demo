@@ -1,9 +1,5 @@
 # UI
 
-## Schedule
-
-Sunday, 6:00 PM to 9:00 PM (3 hours)
-
 ## Codex Model + Effort
 
 GPT-5.6 Terra, medium effort
