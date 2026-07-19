@@ -13,6 +13,8 @@
   "include": [
     "src/shared/**/*.ts",
     "src/enrichment/**/*.ts",
-    "tests/test_enrichment_module.ts"
+    "src/agent/**/*.ts",
+    "scripts/**/*.ts",
+    "tests/**/*.ts"
   ]
 }

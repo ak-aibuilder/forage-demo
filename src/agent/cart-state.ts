@@ -21,6 +21,7 @@ export class CartState {
   private readonly decisionLog: DecisionLogEntry[] = [];
   private readonly constraints: ConstraintStatus[] = [];
   private readonly gaps: GapReportEntry[] = [];
+  private nextToolReasoning: string | undefined;
 
   public constructor(public readonly budgetLimit: number) {
     if (!Number.isFinite(budgetLimit) || budgetLimit < 0) {
@@ -52,8 +53,17 @@ export class CartState {
       tool_called: trace.toolName,
       inputs: trace.inputs,
       outputs: { ...trace.outputs, status: trace.status, latency_ms: trace.latencyMs, ...(trace.error ? { error: trace.error } : {}) },
-      reasoning: trace.status === "success" ? "Tool call completed." : "Tool call failed; no result was fabricated.",
+      reasoning: this.nextToolReasoning ?? (trace.status === "success" ? "Tool call completed." : "Tool call failed; no result was fabricated."),
     });
+    this.nextToolReasoning = undefined;
+  }
+
+  public setNextToolReasoning(reasoning: string): void {
+    this.nextToolReasoning = reasoning;
+  }
+
+  public recordDecision(entry: Omit<DecisionLogEntry, "step">): void {
+    this.decisionLog.push({ ...entry, step: this.decisionLog.length + 1 });
   }
 
   public addConstraint(constraint: ConstraintStatus): void {
