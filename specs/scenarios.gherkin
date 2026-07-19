@@ -1,0 +1,80 @@
+Feature: Constraint-aware apparel cart composition
+  The cart agent composes complete carts from the enriched apparel index while
+  enforcing inventory, budget, and catalog-gap rules.
+
+  Scenario: Search for a cotton shirt with only explicit constraints
+    Given the enriched index contains White Cotton Shirt priced at $30 and Long Sleeve Cotton Top priced at $50
+    When the shopper asks for "a cotton shirt under $60"
+    Then the agent records "cotton", "shirt", and "$60 maximum" as explicit constraints in the decision log
+    And the agent calls search_catalog with a $60 maximum price and a cotton-related filter
+    And the returned cart contains a matching in-stock product priced at or below $60
+    And the decision log contains no inferred occasion or style constraint
+
+  Scenario: Infer an interview outfit from an implicit shopping goal
+    Given the enriched index contains White Cotton Shirt priced at $30, Navy Sports Jacket priced at $60, and Black Leather Bag priced at $30
+    When the shopper asks for "a business casual outfit for a job interview, budget $150"
+    Then the decision log lists professional, polished, non-formal, neutral styling, and multiple apparel slots as inferred constraints
+    And the agent searches for compatible shirt, outer-layer, and bag options
+    And the cart assigns a slot to every selected item
+    And the cart total is at or below $150
+
+  Scenario: Allocate a shared budget across three requested items
+    Given White Cotton Shirt costs $30, Navy Sports Jacket costs $60, and Black Leather Bag costs $30
+    And each product is in stock
+    When the shopper asks for "a shirt, jacket, and bag for a job interview under $150"
+    Then the agent adds all three requested slots to the cart
+    And the decision log records the cart total and budget remaining after every add_to_cart call
+    And get_cart_summary reports a total of $120 and a budget remaining value of $30
+    And no item is added if it would make the cart exceed $150
+
+  Scenario: Replan when initially selected items would exceed the budget
+    Given Blue Silk Tuxedo costs $70, LED High Tops cost $80, and Black Leather Bag costs $30
+    And White Cotton Shirt costs $30 and Navy Sports Jacket costs $60
+    When the shopper asks for "a polished top, outer layer, and bag under $130"
+    And the agent's initial candidate combination would total more than $130
+    Then add_to_cart or get_cart_summary exposes the budget overage before an over-budget item is committed
+    And the decision log flags the budget conflict
+    And the agent searches for a cheaper compatible alternative or reports an unsatisfied constraint
+    And the final cart total is at or below $130 unless the gap report explains why no compliant cart exists
+
+  Scenario: Replace one out-of-stock item with an available substitute
+    Given White Cotton Shirt is the preferred shirt for a business casual outfit and is out of stock
+    And Long Sleeve Cotton Top priced at $50 is in stock as a compatible substitute
+    And Navy Sports Jacket priced at $60 and Black Leather Bag priced at $30 are in stock
+    When the shopper asks for "a business casual interview outfit under $150"
+    Then the agent calls check_inventory for White Cotton Shirt before adding it
+    And the agent calls find_substitutes for White Cotton Shirt after receiving an out-of-stock result
+    And the agent adds Long Sleeve Cotton Top or another returned in-stock substitute
+    And the agent rechecks budget remaining after adding the substitute
+    And the decision log records the stockout, substitute, and revised cart total
+
+  Scenario: Rebalance a cart when a substitute makes it exceed budget
+    Given White Cotton Shirt priced at $30 is out of stock
+    And the available shirt substitute is Classic Varsity Top priced at $60
+    And the current cart also contains Navy Sports Jacket priced at $60 and Black Leather Bag priced at $30
+    When the shopper asks for "a shirt, outer layer, and bag under $130"
+    Then the agent calls find_substitutes after the inventory check reports the shirt unavailable
+    And the agent detects that the substituted cart total of $150 exceeds the $130 budget
+    And the agent finds a cheaper substitute or replaces another compatible item
+    And the decision log records the replan and final budget calculation
+    And the final cart is within budget or the gap report identifies the blocking slot
+
+  Scenario: Report a specific catalog gap for an impossible formal request
+    Given the enriched index has no formal evening gown priced at or below $60
+    And Blue Silk Tuxedo priced at $70 is the closest available formal-leaning product
+    When the shopper asks for "a formal evening gown under $60"
+    Then the agent retries search_catalog once with one relaxed filter before reporting failure
+    And the cart output contains an empty items array or only clearly labeled closest available options
+    And the gap_report identifies the missing formal evening gown category
+    And the gap_report names Blue Silk Tuxedo as the closest available match and includes its $70 price
+    And the gap_report recommends formal evening options at a minimum viable price of $60 or less
+
+  Scenario: Retry one relaxed search after zero catalog results
+    Given search_catalog returns zero products for a waterproof cotton shirt under $20
+    And the enriched index contains no waterproof apparel product
+    When the shopper asks for "a waterproof cotton shirt under $20"
+    Then the agent records the zero-result search in the decision log
+    And the agent calls search_catalog one additional time with exactly one relaxed constraint
+    And the second search result is recorded in the decision log
+    And if the relaxed search also has zero results, the cart output includes a gap_report instead of an invented product
+    And the gap_report states the missing attribute or category, a closest available option if one exists, and a catalog recommendation
