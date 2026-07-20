@@ -46,7 +46,7 @@ Demo video: [to be added after recording]
 ~~~bash
 # Clone
 git clone https://github.com/ak-aibuilder/forage-demo.git
-cd forage
+cd forage-demo
 
 # Install
 npm install
