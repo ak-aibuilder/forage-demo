@@ -120,8 +120,8 @@ export default function ForagePage() {
       <header className="site-header"><a className="brand" href="#top">Forage<span>.</span></a><p>Agentic cart composition engine</p></header>
       <div className="hero-rule" />
       <div className="input-stack" id="top">
-        <GoalInput goal={goal} allInStock={allInStock} isLoading={isLoading} onGoalChange={setGoal} onAllInStockChange={setAllInStock} onSubmit={() => void composeCart()} onScenario={selectScenario} />
         <CatalogBrowser products={catalog} isLoading={isCatalogLoading} error={catalogError} />
+        <GoalInput goal={goal} allInStock={allInStock} isLoading={isLoading} onGoalChange={setGoal} onAllInStockChange={setAllInStock} onSubmit={() => void composeCart()} onScenario={selectScenario} />
       </div>
       <section className="comparison-section" aria-labelledby="comparison-heading">
         <header className="comparison-header"><div className="eyebrow">Side-by-side result</div><h2 id="comparison-heading">Same goal, same products, different data</h2><p>Compare a literal raw-catalog match with a constraint-aware composed cart.</p></header>

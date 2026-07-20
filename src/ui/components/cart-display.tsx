@@ -15,14 +15,18 @@ function Values({ values }: { values: string[] }) {
 
 export function CartDisplay({ cart, products }: CartDisplayProps) {
   return (
-    <section className="cart-panel" aria-labelledby="cart-heading">
-      <div className="section-heading">
-        <div>
-          <div className="eyebrow">Composed cart</div>
-          <h2 id="cart-heading">{cart.items.length ? `${cart.items.length} selected items` : "No cart items selected"}</h2>
+    <details className="cart-panel" open>
+      <summary className="cart-summary">
+        <div className="section-heading">
+          <div>
+            <div className="eyebrow">Composed cart</div>
+            <h2 id="cart-heading">{cart.items.length ? `${cart.items.length} selected items` : "No cart items selected"}</h2>
+          </div>
+          <div className="total-pill">${cart.total_price.toFixed(2)}</div>
         </div>
-        <div className="total-pill">${cart.total_price.toFixed(2)}</div>
-      </div>
+        <span className="cart-toggle-label">Collapse cart</span>
+      </summary>
+      <div className="cart-details-content">
       {cart.items.length > 0 ? <div className="item-list">
         {cart.items.map((item) => {
           const product = products.find((candidate) => candidate.handle === item.product_id);
@@ -74,6 +78,7 @@ export function CartDisplay({ cart, products }: CartDisplayProps) {
         <div><dt>Budget</dt><dd>${cart.budget_limit.toFixed(2)}</dd></div>
         <div className={cart.budget_remaining < 0 ? "budget-warning" : "budget-good"}><dt>Remaining</dt><dd>${cart.budget_remaining.toFixed(2)}</dd></div>
       </dl>
-    </section>
+      </div>
+    </details>
   );
 }

@@ -12,13 +12,19 @@ function stripHtml(value: string): string {
 
 export function CatalogBrowser({ products, isLoading, error }: CatalogBrowserProps) {
   return (
-    <section className="catalog-panel" aria-labelledby="catalog-heading">
-      <div className="eyebrow">Raw Shopify catalog</div>
-      <h2 id="catalog-heading">Product Catalog</h2>
-      <p>This is what the raw Shopify CSV looks like. No structured attributes, no agent-queryable data.</p>
-      {isLoading && <p className="catalog-status">Loading the product catalog...</p>}
-      {error && <p className="catalog-status catalog-error">{error}</p>}
-      {!isLoading && !error && <div className="catalog-grid">
+    <details className="catalog-panel">
+      <summary className="catalog-summary">
+        <span>
+          <span className="eyebrow">Raw Shopify catalog</span>
+          <h2 id="catalog-heading">Product Catalog</h2>
+        </span>
+        <span className="catalog-toggle-label">Expand catalog</span>
+      </summary>
+      <div className="catalog-content">
+        <p>This is what the raw Shopify CSV looks like. No structured attributes, no agent-queryable data.</p>
+        {isLoading && <p className="catalog-status">Loading the product catalog...</p>}
+        {error && <p className="catalog-status catalog-error">{error}</p>}
+        {!isLoading && !error && <div className="catalog-grid">
         {products.map((product) => (
           <article className="catalog-card" key={product.handle}>
             {product.imageSrc ? <img src={product.imageSrc} alt="" className="catalog-image" /> : <div className="catalog-image catalog-image-empty">No image</div>}
@@ -31,7 +37,8 @@ export function CatalogBrowser({ products, isLoading, error }: CatalogBrowserPro
             </div>
           </article>
         ))}
-      </div>}
-    </section>
+        </div>}
+      </div>
+    </details>
   );
 }
