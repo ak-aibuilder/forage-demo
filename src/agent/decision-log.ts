@@ -2,6 +2,7 @@ export interface ShoppingIntent {
   explicitConstraints: string[];
   implicitConstraints: string[];
   requiredSlots: string[];
+  hardProductAttributes: string[];
 }
 
 const addUnique = (values: string[], value: string): void => {
@@ -14,14 +15,24 @@ export function decomposeShoppingGoal(goal: string, budgetLimit: number): Shoppi
   const explicitConstraints: string[] = [];
   const implicitConstraints: string[] = [];
   const requiredSlots: string[] = [];
+  const hardProductAttributes: string[] = [];
 
   const statedBudget = normalized.match(/(?:budget|under|max(?:imum)?|up to)\s*(?:is|of|:)?\s*\$?\s*(\d+(?:\.\d{1,2})?)/i)
     ?? normalized.match(/\$\s*(\d+(?:\.\d{1,2})?)/);
   addUnique(explicitConstraints, `$${statedBudget?.[1] ?? budgetLimit} maximum`);
 
-  if (/cotton/.test(normalized)) addUnique(explicitConstraints, "cotton");
-  if (/waterproof/.test(normalized)) addUnique(explicitConstraints, "waterproof");
-  if (/formal/.test(normalized)) addUnique(explicitConstraints, "formal");
+  for (const attribute of ["cotton", "waterproof", "formal", "tuxedo", "elephant"]) {
+    if (new RegExp(`\\b${attribute}\\b`).test(normalized)) {
+      addUnique(explicitConstraints, attribute);
+      addUnique(hardProductAttributes, attribute);
+    }
+  }
+  for (const color of ["black", "blue", "brown", "green", "grey", "gray", "navy", "orange", "pink", "purple", "red", "white", "yellow"]) {
+    if (new RegExp(`\\b${color}\\b`).test(normalized)) {
+      addUnique(explicitConstraints, color);
+      addUnique(hardProductAttributes, color);
+    }
+  }
   if (/evening/.test(normalized)) addUnique(explicitConstraints, "evening occasion");
   if (/business casual/.test(normalized)) addUnique(explicitConstraints, "business casual");
   if (/job interview|interview/.test(normalized)) addUnique(explicitConstraints, "job interview");
@@ -30,6 +41,7 @@ export function decomposeShoppingGoal(goal: string, budgetLimit: number): Shoppi
   if (/shirt/.test(normalized)) addUnique(requiredSlots, "shirt");
   else if (/\btop\b/.test(normalized)) addUnique(requiredSlots, "top");
   if (/jacket|outer layer|outer-layer/.test(normalized)) addUnique(requiredSlots, "outer layer");
+  if (/tuxedo/.test(normalized)) addUnique(requiredSlots, "outer layer");
   if (/bag|accessory/.test(normalized)) addUnique(requiredSlots, "bag");
   if (/pants|trousers|bottom/.test(normalized)) addUnique(requiredSlots, "bottom");
   if (/skirt/.test(normalized)) addUnique(requiredSlots, "skirt");
@@ -47,5 +59,5 @@ export function decomposeShoppingGoal(goal: string, budgetLimit: number): Shoppi
   if (requiredSlots.length === 0) addUnique(requiredSlots, "item");
   for (const slot of requiredSlots) addUnique(explicitConstraints, `${slot} slot`);
 
-  return { explicitConstraints, implicitConstraints, requiredSlots };
+  return { explicitConstraints, implicitConstraints, requiredSlots, hardProductAttributes };
 }

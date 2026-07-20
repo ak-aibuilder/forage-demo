@@ -1,5 +1,5 @@
 import type { EnrichedIndex } from "../../shared/types.js";
-import { CartState } from "../cart-state.js";
+import { CartState, type RunTraceContext } from "../cart-state.js";
 import { addToCart, type AddToCartArgs } from "./add-to-cart.js";
 import { checkInventory, type CheckInventoryArgs, type InventoryConfig } from "./check-inventory.js";
 import { findSubstitutes, type FindSubstitutesArgs } from "./find-substitutes.js";
@@ -16,7 +16,7 @@ export { addToCart } from "./add-to-cart.js";
 export { getCartSummary } from "./get-cart-summary.js";
 
 /** Creates the five controlled handlers and one request-scoped cart state. */
-export function createAgentTools(index: EnrichedIndex, budgetLimit: number, inventory: InventoryConfig = {}): {
+export function createAgentTools(index: EnrichedIndex, budgetLimit: number, inventory: InventoryConfig = {}, traceContext?: RunTraceContext): {
   state: CartState;
   schemas: typeof TOOL_SCHEMAS;
   search_catalog: (args: SearchCatalogArgs) => ReturnType<typeof searchCatalog>;
@@ -26,6 +26,7 @@ export function createAgentTools(index: EnrichedIndex, budgetLimit: number, inve
   get_cart_summary: () => ReturnType<typeof getCartSummary>;
 } {
   const state = new CartState(budgetLimit);
+  if (traceContext) state.setRunTraceContext(traceContext);
   const normalizedIndex = normalizeEnrichedIndex(index);
   return {
     state,

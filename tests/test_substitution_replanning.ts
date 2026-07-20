@@ -64,6 +64,6 @@ test("waterproof zero-result search relaxes exactly one constraint then reports 
   expect(searches).toHaveLength(2);
   expect(searches[1].reasoning).toContain("1 changed filter");
   expect(output.items).toEqual([]);
-  expect(output.gap_report[0]).toMatchObject({ missing_attribute_or_category: "waterproof shirt", min_viable_price: 20 });
+  expect(output.gap_report[0]).toMatchObject({ missing_attribute_or_category: "waterproof shirt", min_viable_price: 30 });
   expect(output.gap_report[0].recommendation).toContain("Catalog recommendation");
 });

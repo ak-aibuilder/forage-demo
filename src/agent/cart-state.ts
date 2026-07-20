@@ -15,6 +15,15 @@ export interface ToolTrace {
   error?: string;
 }
 
+export interface RunTraceContext {
+  request_id: string;
+  prompt_version: string;
+  model: string;
+  retry_count: number;
+  model_latency_ms: number;
+  token_usage: { input_tokens: number; output_tokens: number; total_tokens: number };
+}
+
 /** Mutable, request-scoped state. Create one instance for each shopping request. */
 export class CartState {
   private readonly items: CartItem[] = [];
@@ -22,6 +31,7 @@ export class CartState {
   private readonly constraints: ConstraintStatus[] = [];
   private readonly gaps: GapReportEntry[] = [];
   private nextToolReasoning: string | undefined;
+  private runTraceContext: RunTraceContext | undefined;
 
   public constructor(public readonly budgetLimit: number) {
     if (!Number.isFinite(budgetLimit) || budgetLimit < 0) {
@@ -52,10 +62,14 @@ export class CartState {
       step: this.decisionLog.length + 1,
       tool_called: trace.toolName,
       inputs: trace.inputs,
-      outputs: { ...trace.outputs, status: trace.status, latency_ms: trace.latencyMs, ...(trace.error ? { error: trace.error } : {}) },
+      outputs: { ...trace.outputs, status: trace.status, latency_ms: trace.latencyMs, ...(this.runTraceContext ? { trace: { ...this.runTraceContext, token_usage: { ...this.runTraceContext.token_usage } } } : {}), ...(trace.error ? { error: trace.error } : {}) },
       reasoning: this.nextToolReasoning ?? (trace.status === "success" ? "Tool call completed." : "Tool call failed; no result was fabricated."),
     });
     this.nextToolReasoning = undefined;
+  }
+
+  public setRunTraceContext(context: RunTraceContext): void {
+    this.runTraceContext = { ...context, token_usage: { ...context.token_usage } };
   }
 
   public setNextToolReasoning(reasoning: string): void {

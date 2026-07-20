@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { CartOutput } from "../shared/types.js";
 import { CartDisplay } from "./components/cart-display";
 import { DecisionLog } from "./components/decision-log";
+import { ErrorDisplay } from "./components/error-display";
 import { GapReport } from "./components/gap-report";
 import { GoalInput } from "./components/goal-input";
 import { Loading } from "./components/loading";
@@ -15,10 +16,12 @@ export default function ForagePage() {
   const [allInStock, setAllInStock] = useState(true);
   const [result, setResult] = useState<CartOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [errorRequestId, setErrorRequestId] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
 
   async function composeCart(): Promise<void> {
     setError(null);
+    setErrorRequestId(undefined);
     setResult(null);
     setIsLoading(true);
     const controller = new AbortController();
@@ -30,8 +33,17 @@ export default function ForagePage() {
         body: JSON.stringify({ goal, allInStock }),
         signal: controller.signal,
       });
-      const payload = await response.json() as CartOutput | { error?: string };
-      if (!response.ok || !("items" in payload)) throw new Error("error" in payload ? payload.error : "The cart agent returned an invalid response.");
+      const responseText = await response.text();
+      let payload: CartOutput | { error?: string; requestId?: string };
+      try {
+        payload = JSON.parse(responseText) as CartOutput | { error?: string; requestId?: string };
+      } catch {
+        throw new Error("The cart service returned an unreadable response. Please try again.");
+      }
+      if (!response.ok || !("items" in payload)) {
+        if ("requestId" in payload) setErrorRequestId(payload.requestId);
+        throw new Error("error" in payload && payload.error ? payload.error : "The cart agent returned an invalid response.");
+      }
       setResult(payload);
     } catch (caught) {
       const message = caught instanceof DOMException && caught.name === "AbortError"
@@ -49,6 +61,7 @@ export default function ForagePage() {
     setAllInStock(nextAllInStock);
     setResult(null);
     setError(null);
+    setErrorRequestId(undefined);
   }
 
   return (
@@ -59,7 +72,7 @@ export default function ForagePage() {
         <GoalInput goal={goal} allInStock={allInStock} isLoading={isLoading} onGoalChange={setGoal} onAllInStockChange={setAllInStock} onSubmit={() => void composeCart()} onScenario={selectScenario} />
         <section className="results-column" aria-live="polite">
           {isLoading && <Loading />}
-          {error && <section className="error-panel" role="alert"><div className="eyebrow">Agent unavailable</div><h2>We could not compose this cart.</h2><p>{error}</p><button className="secondary-button" type="button" onClick={() => void composeCart()}>Try again</button></section>}
+          {error && <ErrorDisplay message={error} requestId={errorRequestId} onRetry={() => void composeCart()} />}
           {!isLoading && !error && !result && <section className="empty-panel"><div className="eyebrow">Ready to compose</div><h2>Start with a goal.</h2><p>Forage will show the selected items, budget math, tool trace, and any catalog gaps.</p></section>}
           {result && !isLoading && <><CartDisplay cart={result} /><GapReport gaps={result.gap_report} /><DecisionLog entries={result.decision_log} /></>}
         </section>

@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 export const ENRICHMENT_MODEL = "gpt-5.6-terra";
 export const AGENT_MODEL = "gpt-5.6-sol";
 export const ENRICHMENT_PROMPT_VERSION = "forage-enrichment-v1";
+export const AGENT_PROMPT_VERSION = "forage-cart-agent-v1";
 
 export interface ForageConfig {
   apiKey: string | undefined;

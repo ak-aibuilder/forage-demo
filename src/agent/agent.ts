@@ -1,4 +1,5 @@
 import type { CartOutput, EnrichedIndex, EnrichedProduct } from "../shared/types.js";
+import { AGENT_PROMPT_VERSION } from "../shared/config.js";
 import { decomposeShoppingGoal, type ShoppingIntent } from "./decision-log.js";
 import { createGapReport } from "./gap-reporter.js";
 import { createAgentTools } from "./tools/index.js";
@@ -27,6 +28,7 @@ type ResponseInputItem = Record<string, unknown>;
 export interface AgentResponse {
   id?: string;
   output: Array<Record<string, unknown>>;
+  usage?: { input_tokens?: number; output_tokens?: number; total_tokens?: number };
 }
 export type AgentTransport = (body: Record<string, unknown>) => Promise<AgentResponse>;
 
@@ -35,6 +37,7 @@ export interface CartAgentOptions {
   apiBaseUrl?: string;
   model?: string;
   maxToolCalls?: number;
+  requestId?: string;
   transport?: AgentTransport;
 }
 
@@ -56,6 +59,8 @@ interface AgentRunContext {
   lastStockout?: string;
   lastSubstitution?: { original: string; selected: string };
   previousSearchWasEmpty: boolean;
+  relaxedSearchRetries: number;
+  relaxedRetryConsumed: boolean;
 }
 
 const FILTER_KEYS = ["use_case", "aesthetic_style", "price_min", "price_max", "functional_attributes", "keyword"] as const;
@@ -101,6 +106,7 @@ export class CartAgent {
   private readonly apiBaseUrl: string;
   private readonly model: string;
   private readonly maxToolCalls: number;
+  private readonly requestId: string;
   private readonly transport: AgentTransport;
 
   public constructor(
@@ -112,12 +118,13 @@ export class CartAgent {
     this.apiBaseUrl = options.apiBaseUrl ?? "https://api.openai.com/v1";
     this.model = options.model ?? "gpt-5.6-sol";
     this.maxToolCalls = options.maxToolCalls ?? 15;
+    this.requestId = options.requestId ?? crypto.randomUUID();
     const apiKey = options.apiKey;
     this.transport = options.transport ?? (async (body) => {
       if (!apiKey) throw new Error("OPENAI_API_KEY is required to run the cart agent.");
       const response = await fetch(`${this.apiBaseUrl}/responses`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "X-Client-Request-Id": this.requestId },
         body: JSON.stringify(body),
       });
       if (!response.ok) throw new Error(`Cart agent request failed with status ${response.status}: ${(await response.text()).slice(0, 800)}`);
@@ -127,19 +134,28 @@ export class CartAgent {
 
   public async run(goal: string): Promise<CartOutput> {
     if (!goal.trim()) throw new Error("Shopping goal must not be empty.");
-    const tools = createAgentTools(this.index, this.budgetLimit, this.inventory);
+    const traceContext = {
+      request_id: this.requestId,
+      prompt_version: AGENT_PROMPT_VERSION,
+      model: this.model,
+      retry_count: 0,
+      model_latency_ms: 0,
+      token_usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
+    };
+    const tools = createAgentTools(this.index, this.budgetLimit, this.inventory, traceContext);
     const intent = decomposeShoppingGoal(goal, this.budgetLimit);
     this.recordIntent(tools.state, goal, intent);
 
     const input: ResponseInputItem[] = [{
       role: "user",
-      content: `Shopping goal: ${goal}\nHard budget: $${this.budgetLimit}\nRequired slots: ${intent.requiredSlots.join(", ")}\nRecorded explicit constraints: ${intent.explicitConstraints.join(", ")}\nRecorded implicit constraints: ${intent.implicitConstraints.join(", ")}\nUse one search per required slot, check inventory before adding, and fill every slot. For the initial search for each slot, set use_case, aesthetic_style, and functional_attributes to null; use the literal required category as keyword, such as shirt, jacket for outer layer, bag, or gown; and apply the remaining budget as price_max. Evaluate the returned enriched attributes against the recorded constraints. Use a structured filter only when an exact normalized tag appeared in an earlier tool result. If a search is empty, retry once by relaxing exactly one filter. When check_inventory reports a stockout, call find_substitutes for the original product, check the selected substitute's inventory, reserve enough budget for unfilled slots, and recheck the full cart immediately after adding the substitute.`,
+      content: `Shopping goal: ${goal}\nHard budget: $${this.budgetLimit}\nRequired slots: ${intent.requiredSlots.join(", ")}\nRecorded explicit constraints: ${intent.explicitConstraints.join(", ")}\nHard product attributes: ${intent.hardProductAttributes.join(", ") || "none"}\nRecorded implicit constraints: ${intent.implicitConstraints.join(", ")}\nUse one search per required slot, check inventory before adding, and fill every slot. For the initial search for each slot, set use_case, aesthetic_style, and functional_attributes to null; use the literal required category as keyword, such as shirt, jacket for outer layer, bag, or gown, combined with every hard product attribute when any are present; and apply the remaining budget as price_max. Evaluate the returned enriched attributes against the recorded constraints. Never add an approximation that lacks a hard product attribute. Use a structured filter only when an exact normalized tag appeared in an earlier tool result. If a search is empty, retry once by relaxing exactly one filter. When check_inventory reports a stockout, call find_substitutes for the original product, check the selected substitute's inventory, reserve enough budget for unfilled slots, and recheck the full cart immediately after adding the substitute.`,
     }];
     let toolCallCount = 0;
     let previousSearchArgs: Record<string, unknown> | undefined;
-    const context: AgentRunContext = { inventoryStatus: new Map(), substituteOrigins: new Map(), previousSearchWasEmpty: false };
+    const context: AgentRunContext = { inventoryStatus: new Map(), substituteOrigins: new Map(), previousSearchWasEmpty: false, relaxedSearchRetries: 0, relaxedRetryConsumed: false };
 
     while (toolCallCount < this.maxToolCalls) {
+      const modelStartedAt = performance.now();
       const response = await this.transport({
         model: this.model,
         reasoning: { effort: "high" },
@@ -148,6 +164,11 @@ export class CartAgent {
         parallel_tool_calls: false,
         input,
       });
+      traceContext.model_latency_ms += Math.round(performance.now() - modelStartedAt);
+      traceContext.token_usage.input_tokens += response.usage?.input_tokens ?? 0;
+      traceContext.token_usage.output_tokens += response.usage?.output_tokens ?? 0;
+      traceContext.token_usage.total_tokens += response.usage?.total_tokens ?? (response.usage?.input_tokens ?? 0) + (response.usage?.output_tokens ?? 0);
+      tools.state.setRunTraceContext(traceContext);
       const calls = response.output.filter((item) => item.type === "function_call");
       input.push(...response.output);
 
@@ -163,16 +184,33 @@ export class CartAgent {
         const reasoning = this.toolReasoning(name, args, intent, context, previousSearchArgs);
         tools.state.setNextToolReasoning(reasoning);
         let result: unknown;
-        try {
-          result = this.dispatchTool(tools, name, args, context);
-        } catch (error) {
-          result = { error: error instanceof Error ? error.message : "Unknown tool error" };
+        const isRelaxedSearch = name === "search_catalog" && context.previousSearchWasEmpty && previousSearchArgs !== undefined;
+        const changedFilters = isRelaxedSearch ? searchFilterChanges(previousSearchArgs!, args) : 0;
+        if (isRelaxedSearch && (context.relaxedRetryConsumed || changedFilters !== 1)) {
+          const error = context.relaxedRetryConsumed
+            ? "The zero-result search already used its single relaxed retry."
+            : `A relaxed retry must change exactly one filter; received ${changedFilters} changes.`;
+          tools.state.recordTrace({ toolName: "search_catalog", inputs: args, outputs: {}, status: "failure", latencyMs: 0, error });
+          result = { error };
+        } else {
+          if (isRelaxedSearch) {
+            context.relaxedSearchRetries += 1;
+            context.relaxedRetryConsumed = true;
+            traceContext.retry_count = context.relaxedSearchRetries;
+            tools.state.setRunTraceContext(traceContext);
+          }
+          try {
+            result = this.dispatchTool(tools, name, args, context, intent);
+          } catch (error) {
+            result = { error: error instanceof Error ? error.message : "Unknown tool error" };
+          }
         }
         toolCallCount += 1;
 
         if (name === "search_catalog" && Array.isArray(result)) {
           context.previousSearchWasEmpty = result.length === 0;
           previousSearchArgs = args;
+          if (result.length > 0) context.relaxedRetryConsumed = false;
         }
 
         if (name === "add_to_cart" && !(typeof result === "object" && result !== null && "error" in result) && toolCallCount < this.maxToolCalls) {
@@ -187,9 +225,18 @@ export class CartAgent {
         }
 
         input.push({ type: "function_call_output", call_id: call.call_id, output: JSON.stringify(result) });
+        if (name === "add_to_cart" && this.hasCompleteCart(tools.state, intent)) {
+          return tools.state.output();
+        }
       }
     }
 
+    tools.state.recordDecision({
+      tool_called: null,
+      inputs: { max_tool_calls: this.maxToolCalls, completed_tool_calls: toolCallCount },
+      outputs: { status: "partial", request_id: this.requestId },
+      reasoning: `The ${this.maxToolCalls}-tool-call safety limit was reached. Returning the current cart and explaining every unfilled slot instead of continuing indefinitely.`,
+    });
     this.reportMissingSlots(tools.state, intent, goal, `The ${this.maxToolCalls}-tool-call safety limit was reached.`);
     return tools.state.output();
   }
@@ -198,7 +245,7 @@ export class CartAgent {
     state.recordDecision({
       tool_called: null,
       inputs: { shopping_goal: goal, budget_limit: this.budgetLimit },
-      outputs: { explicit_constraints: intent.explicitConstraints, implicit_constraints: intent.implicitConstraints, required_slots: intent.requiredSlots },
+      outputs: { explicit_constraints: intent.explicitConstraints, implicit_constraints: intent.implicitConstraints, required_slots: intent.requiredSlots, hard_product_attributes: intent.hardProductAttributes },
       reasoning: "Decomposed the goal into stated and defensible inferred constraints before the first tool call.",
     });
     for (const constraint of intent.explicitConstraints) state.addConstraint({ constraint, status: "required", notes: "Explicitly stated or directly parsed from the shopping goal." });
@@ -210,9 +257,18 @@ export class CartAgent {
     for (const slot of intent.requiredSlots) {
       if (!items.some((item) => satisfiesSlot(slot, item.slot))) {
         const missing = this.gapLabel(goal, slot);
-        state.addGap(createGapReport(missing, state.budgetRemaining, reason, this.findClosestProduct(goal, slot, items.map((item) => item.product_id))));
+        const closest = this.findClosestProduct(goal, slot, items.map((item) => item.product_id));
+        const minimumCompatiblePrice = this.findMinimumCompatiblePrice(slot);
+        const isBudgetBlocked = minimumCompatiblePrice !== undefined && this.budgetLimit < minimumCompatiblePrice;
+        const budgetReason = isBudgetBlocked ? `${reason} The $${this.budgetLimit.toFixed(2)} budget is below every compatible catalog item.` : reason;
+        state.addGap(createGapReport(missing, state.budgetRemaining, budgetReason, closest, isBudgetBlocked ? minimumCompatiblePrice : undefined));
       }
     }
+  }
+
+  private hasCompleteCart(state: ReturnType<typeof createAgentTools>["state"], intent: ShoppingIntent): boolean {
+    const items = state.summary().items;
+    return intent.requiredSlots.every((slot) => items.some((item) => satisfiesSlot(slot, item.slot)));
   }
 
   private toolReasoning(name: string, args: Record<string, unknown>, intent: ShoppingIntent, context: AgentRunContext, previousSearchArgs?: Record<string, unknown>): string {
@@ -231,7 +287,20 @@ export class CartAgent {
     const normalized = goal.toLowerCase();
     if (/formal/.test(normalized) && /evening/.test(normalized) && /gown|outfit/.test(normalized)) return "formal evening gown";
     if (/waterproof/.test(normalized)) return `waterproof ${slot}`;
+    if (/purple elephant|mars/.test(normalized)) return goal.trim().toLowerCase();
     return slot;
+  }
+
+  private findMinimumCompatiblePrice(slot: string): number | undefined {
+    const prices = this.index.products
+      .filter((product) => inventoryQuantity(this.inventory, product.handle) > 0)
+      .filter((product) => {
+        if (slot === "item") return true;
+        const category = productCategory(product);
+        return satisfiesSlot(slot, category) || (SLOT_ALIASES[slot] ?? [slot]).some((alias) => productSearchText(product).includes(alias));
+      })
+      .map((product) => product.price);
+    return prices.length ? Math.min(...prices) : undefined;
   }
 
   private findClosestProduct(goal: string, slot: string, excludedIds: string[]): { title: string; price: number } | undefined {
@@ -252,7 +321,7 @@ export class CartAgent {
     return closest ? { title: closest.title, price: closest.price } : undefined;
   }
 
-  private dispatchTool(tools: ReturnType<typeof createAgentTools>, name: string, args: Record<string, unknown>, context: AgentRunContext): unknown {
+  private dispatchTool(tools: ReturnType<typeof createAgentTools>, name: string, args: Record<string, unknown>, context: AgentRunContext, intent: ShoppingIntent): unknown {
     switch (name) {
       case "search_catalog": return tools.search_catalog(args as unknown as Parameters<typeof tools.search_catalog>[0]);
       case "check_inventory": {
@@ -279,9 +348,17 @@ export class CartAgent {
           tools.state.recordTrace({ toolName: "add_to_cart", inputs: args, outputs: {}, status: "failure", latencyMs: 0, error });
           throw new Error(error);
         }
+        const selectedProduct = this.index.products.find((product) => product.handle === productId);
+        const selectedText = selectedProduct ? productSearchText(selectedProduct) : "";
+        const missingAttributes = intent.hardProductAttributes.filter((attribute) => !selectedText.includes(attribute));
+        if (missingAttributes.length > 0) {
+          const error = `Cannot add ${productId}; it does not satisfy hard product attributes: ${missingAttributes.join(", ")}. Report a gap rather than adding an approximation.`;
+          tools.state.recordTrace({ toolName: "add_to_cart", inputs: args, outputs: {}, status: "failure", latencyMs: 0, error });
+          throw new Error(error);
+        }
         const result = tools.add_to_cart(args as unknown as Parameters<typeof tools.add_to_cart>[0]);
         const unresolved = context.lastStockout ? this.index.products.find((product) => product.handle === context.lastStockout) : undefined;
-        const selected = this.index.products.find((product) => product.handle === productId);
+        const selected = selectedProduct;
         const original = context.substituteOrigins.get(productId)
           ?? (unresolved && selected && productCategory(unresolved) === productCategory(selected) ? unresolved.handle : undefined);
         if (original) {
