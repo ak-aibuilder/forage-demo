@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import type { CartOutput } from "../shared/types.js";
+import { useEffect, useState } from "react";
+import type { CartOutput, EnrichedIndex, EnrichedProduct } from "../shared/types.js";
+import { CatalogBrowser } from "./components/catalog-browser";
 import { CartDisplay } from "./components/cart-display";
 import { DecisionLog } from "./components/decision-log";
 import { ErrorDisplay } from "./components/error-display";
@@ -18,6 +19,27 @@ export default function ForagePage() {
   const [error, setError] = useState<string | null>(null);
   const [errorRequestId, setErrorRequestId] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
+  const [catalog, setCatalog] = useState<EnrichedProduct[]>([]);
+  const [catalogError, setCatalogError] = useState<string | undefined>();
+  const [isCatalogLoading, setIsCatalogLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    async function loadCatalog(): Promise<void> {
+      try {
+        const response = await fetch("/api/catalog", { signal: controller.signal });
+        const payload = await response.json() as EnrichedIndex | { error?: string };
+        if (!response.ok || !("products" in payload)) throw new Error("error" in payload && payload.error ? payload.error : "The product catalog is unavailable.");
+        setCatalog(payload.products);
+      } catch (caught) {
+        if (!(caught instanceof DOMException && caught.name === "AbortError")) setCatalogError(caught instanceof Error ? caught.message : "The product catalog is unavailable.");
+      } finally {
+        setIsCatalogLoading(false);
+      }
+    }
+    void loadCatalog();
+    return () => controller.abort();
+  }, []);
 
   async function composeCart(): Promise<void> {
     setError(null);
@@ -69,12 +91,15 @@ export default function ForagePage() {
       <header className="site-header"><a className="brand" href="#top">Forage<span>.</span></a><p>Agentic cart composition engine</p></header>
       <div className="hero-rule" />
       <div className="workspace" id="top">
-        <GoalInput goal={goal} allInStock={allInStock} isLoading={isLoading} onGoalChange={setGoal} onAllInStockChange={setAllInStock} onSubmit={() => void composeCart()} onScenario={selectScenario} />
+        <div className="input-column">
+          <GoalInput goal={goal} allInStock={allInStock} isLoading={isLoading} onGoalChange={setGoal} onAllInStockChange={setAllInStock} onSubmit={() => void composeCart()} onScenario={selectScenario} />
+          <CatalogBrowser products={catalog} isLoading={isCatalogLoading} error={catalogError} />
+        </div>
         <section className="results-column" aria-live="polite">
           {isLoading && <Loading />}
           {error && <ErrorDisplay message={error} requestId={errorRequestId} onRetry={() => void composeCart()} />}
           {!isLoading && !error && !result && <section className="empty-panel"><div className="eyebrow">Ready to compose</div><h2>Start with a goal.</h2><p>Forage will show the selected items, budget math, tool trace, and any catalog gaps.</p></section>}
-          {result && !isLoading && <><CartDisplay cart={result} /><GapReport gaps={result.gap_report} /><DecisionLog entries={result.decision_log} /></>}
+          {result && !isLoading && <><CartDisplay cart={result} products={catalog} /><GapReport gaps={result.gap_report} /><DecisionLog entries={result.decision_log} /></>}
         </section>
       </div>
     </main>
