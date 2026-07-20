@@ -52,6 +52,9 @@ npm install
 # Set API key
 export OPENAI_API_KEY=your_key_here
 
+# On Railway, add OPENAI_API_KEY as a service variable instead.
+# Optional variables and their defaults are listed in .env.example.
+
 # Enrich sample data
 npm run enrich
 
