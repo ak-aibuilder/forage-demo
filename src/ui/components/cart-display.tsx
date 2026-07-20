@@ -28,9 +28,16 @@ export function CartDisplay({ cart, products }: CartDisplayProps) {
           const product = products.find((candidate) => candidate.handle === item.product_id);
           return (
           <article className="cart-item" key={item.product_id}>
-            <div className="item-topline"><span className="slot-label">{item.slot}</span><strong>${item.price.toFixed(2)}</strong></div>
-            <h3>{item.title}</h3>
-            <p>{item.justification}</p>
+            <div className="cart-item-summary">
+              {product?.imageSrc
+                ? <img className="result-thumbnail" src={product.imageSrc} alt="" />
+                : <div className="result-thumbnail result-thumbnail-empty" aria-hidden="true">{item.title.charAt(0)}</div>}
+              <div className="cart-item-copy">
+                <div className="item-topline"><span className="slot-label">{item.slot}</span><strong>${item.price.toFixed(2)}</strong></div>
+                <h3>{item.title}</h3>
+                <p>{item.justification}</p>
+              </div>
+            </div>
             {product && <details className="product-comparison">
               <summary>See raw catalog data vs enriched attributes</summary>
               <div className="comparison-grid">

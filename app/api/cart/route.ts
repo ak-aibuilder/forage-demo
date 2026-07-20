@@ -4,6 +4,7 @@ import { CartAgent } from "../../../src/agent/index.js";
 import type { InventoryConfig } from "../../../src/agent/tools/check-inventory.js";
 import type { EnrichedIndex } from "../../../src/shared/types.js";
 import { publicCartError } from "../../../src/shared/public-cart-error.js";
+import { deriveQueryStats } from "../../../src/shared/query-stats.js";
 
 export const runtime = "nodejs";
 
@@ -48,7 +49,8 @@ export async function POST(request: Request): Promise<Response> {
       model: process.env.FORAGE_AGENT_MODEL ?? "gpt-5.6-sol",
       requestId,
     });
-    return respond(await runWithTimeout(agent.run(goal), 120_000));
+    const cart = await runWithTimeout(agent.run(goal), 120_000);
+    return respond({ ...cart, stats: deriveQueryStats(cart.decision_log) });
   } catch (error) {
     const failure = publicCartError(error);
     console.error(JSON.stringify({ event: "cart.request.failed", requestId, status: failure.status, error: failure.message }));

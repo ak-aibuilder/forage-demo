@@ -73,4 +73,13 @@ export interface CartOutput {
   constraints_met: ConstraintStatus[];
   decision_log: DecisionLogEntry[];
   gap_report: GapReportEntry[];
+  stats?: QueryStats;
+}
+
+export interface QueryStats {
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  tool_calls_count: number;
+  reasoning_steps: number;
 }

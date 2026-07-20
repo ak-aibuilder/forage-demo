@@ -1,14 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { RawSearchResult } from "../shared/raw-search.js";
 import type { CartOutput, EnrichedIndex, EnrichedProduct } from "../shared/types.js";
 import { CatalogBrowser } from "./components/catalog-browser";
 import { CartDisplay } from "./components/cart-display";
+import { ConstraintChips } from "./components/constraint-chips";
 import { DecisionLog } from "./components/decision-log";
 import { ErrorDisplay } from "./components/error-display";
+import { ExportButton } from "./components/export-button";
 import { GapReport } from "./components/gap-report";
 import { GoalInput } from "./components/goal-input";
 import { Loading } from "./components/loading";
+import { QueryStats } from "./components/query-stats";
+import { RawResults } from "./components/raw-results";
 
 const INITIAL_GOAL = "business casual outfit for a job interview, budget $150";
 
@@ -22,6 +27,10 @@ export default function ForagePage() {
   const [catalog, setCatalog] = useState<EnrichedProduct[]>([]);
   const [catalogError, setCatalogError] = useState<string | undefined>();
   const [isCatalogLoading, setIsCatalogLoading] = useState(true);
+  const [rawResults, setRawResults] = useState<RawSearchResult[]>([]);
+  const [rawError, setRawError] = useState<string | undefined>();
+  const [isRawLoading, setIsRawLoading] = useState(false);
+  const [hasRun, setHasRun] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -46,6 +55,22 @@ export default function ForagePage() {
     setErrorRequestId(undefined);
     setResult(null);
     setIsLoading(true);
+    setHasRun(true);
+    setRawResults([]);
+    setRawError(undefined);
+    setIsRawLoading(true);
+    void fetch("/api/raw-search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ goal }),
+    }).then(async (response) => {
+      const payload = await response.json() as { results?: RawSearchResult[]; error?: string };
+      if (!response.ok || !Array.isArray(payload.results)) throw new Error(payload.error ?? "Raw catalog search failed.");
+      setRawResults(payload.results);
+    }).catch((caught) => {
+      setRawError(caught instanceof Error ? caught.message : "Raw catalog search failed.");
+    }).finally(() => setIsRawLoading(false));
+
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 125_000);
     try {
@@ -84,24 +109,45 @@ export default function ForagePage() {
     setResult(null);
     setError(null);
     setErrorRequestId(undefined);
+    setRawResults([]);
+    setRawError(undefined);
+    setIsRawLoading(false);
+    setHasRun(false);
   }
 
   return (
     <main className="forage-shell">
       <header className="site-header"><a className="brand" href="#top">Forage<span>.</span></a><p>Agentic cart composition engine</p></header>
       <div className="hero-rule" />
-      <div className="workspace" id="top">
-        <div className="input-column">
-          <GoalInput goal={goal} allInStock={allInStock} isLoading={isLoading} onGoalChange={setGoal} onAllInStockChange={setAllInStock} onSubmit={() => void composeCart()} onScenario={selectScenario} />
-          <CatalogBrowser products={catalog} isLoading={isCatalogLoading} error={catalogError} />
-        </div>
-        <section className="results-column" aria-live="polite">
-          {isLoading && <Loading />}
-          {error && <ErrorDisplay message={error} requestId={errorRequestId} onRetry={() => void composeCart()} />}
-          {!isLoading && !error && !result && <section className="empty-panel"><div className="eyebrow">Ready to compose</div><h2>Start with a goal.</h2><p>Forage will show the selected items, budget math, tool trace, and any catalog gaps.</p></section>}
-          {result && !isLoading && <><CartDisplay cart={result} products={catalog} /><GapReport gaps={result.gap_report} /><DecisionLog entries={result.decision_log} /></>}
-        </section>
+      <div className="input-stack" id="top">
+        <GoalInput goal={goal} allInStock={allInStock} isLoading={isLoading} onGoalChange={setGoal} onAllInStockChange={setAllInStock} onSubmit={() => void composeCart()} onScenario={selectScenario} />
+        <CatalogBrowser products={catalog} isLoading={isCatalogLoading} error={catalogError} />
       </div>
+      <section className="comparison-section" aria-labelledby="comparison-heading">
+        <header className="comparison-header"><div className="eyebrow">Side-by-side result</div><h2 id="comparison-heading">Same goal, same products, different data</h2><p>Compare a literal raw-catalog match with a constraint-aware composed cart.</p></header>
+        <div className="result-comparison">
+          <div className="raw-comparison-panel">
+            <RawResults results={rawResults} isLoading={isRawLoading} error={rawError} hasRun={hasRun} />
+          </div>
+          <section className="enriched-comparison-panel" aria-live="polite" aria-labelledby="enriched-results-heading">
+            <div className="comparison-side-label">With Enrichment</div>
+            <h3 id="enriched-results-heading">Agentic composition (GPT-5.6 Sol)</h3>
+            <p className="comparison-benefit">Constraint-aware selection, inventory replanning, and full-cart budget control.</p>
+            {isLoading && <Loading />}
+            {error && <ErrorDisplay message={error} requestId={errorRequestId} onRetry={() => void composeCart()} />}
+            {!isLoading && !error && !result && <section className="empty-panel"><div className="eyebrow">Ready to compose</div><h2>Start with a goal.</h2><p>Forage will show the selected items, budget math, tool trace, and any catalog gaps.</p></section>}
+            {result && !isLoading && <div className="enriched-result-stack">
+              <ConstraintChips entries={result.decision_log} />
+              <CartDisplay cart={result} products={catalog} />
+              <GapReport gaps={result.gap_report} />
+              <DecisionLog entries={result.decision_log} />
+              <QueryStats cart={result} />
+              <ExportButton cart={result} />
+            </div>}
+          </section>
+        </div>
+      </section>
+      <footer className="site-footer">Forage Build Week 2026 · Raw catalog evidence, enriched agent decisions</footer>
     </main>
   );
 }
