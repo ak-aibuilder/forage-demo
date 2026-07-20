@@ -2,6 +2,8 @@
 
 An agentic cart composition engine that turns natural-language shopping goals into multi-item carts with constraint reasoning, substitution replanning, and catalog gap reporting.
 
+**[Live Demo](https://forage-demo-production.up.railway.app)** | [Production Optimization Roadmap](docs/PRODUCTION_OPTIMIZATION_ROADMAP.md)
+
 ## The Problem
 
 Shopping agents need to assemble complete solutions, not return a ranked list of products. A request for an interview outfit under a shared budget requires the system to infer occasion and style constraints, select compatible items, respect availability, and make tradeoffs across the full cart.
@@ -37,13 +39,13 @@ The cart agent uses five controlled tools to search the enriched index, check si
 
 ## Demo Video
 
-[Placeholder: YouTube link]
+Demo video: [to be added after recording]
 
 ## How to Run
 
 ~~~bash
 # Clone
-git clone <repository-url>
+git clone https://github.com/ak-aibuilder/forage-demo.git
 cd forage
 
 # Install
@@ -75,12 +77,12 @@ These commands are the intended TypeScript stack. Update them only if the implem
 
 ## How Codex Was Used
 
-**Placeholder: complete during or after the build.**
+I used Codex to generate the full spec package, including the PRD, AGENTS.md, BDD scenarios, task backlog, and test stubs, from a single planning prompt before any code was written.
 
-- Codex generated the initial project scaffolding including [X].
-- Codex accelerated [Y] by [how].
-- Key decisions where Codex contributed: [Z].
-- Codex Session IDs: [list].
+- I fed each of the 8 implementation tasks to Codex as a self-contained prompt with explicit acceptance criteria. This produced more reliable output than requesting the full application at once.
+- Codex built the ReAct agent loop, all five function-calling tool schemas, the enrichment prompt with anti-hallucination constraints, and the complete Next.js UI including the side-by-side comparison.
+- The commit history shows the iterative build: planning artifacts, tasks 1-2, agent core, UI, deployment, and enhancements.
+- Codex Session IDs: 019f7b95-a93d-7c72-a6f4-c0ee9e1f035f, 019f7c6a-9638-7c02-b505-cb1eb41fde25.
 
 ## How GPT-5.6 Powers the App
 
@@ -106,10 +108,12 @@ The cart agent consumes only EnrichedIndex, never raw CSV data. This makes enric
 
 ### Works well
 
-- **Placeholder: complete after build and validation.**
-- [Intent decomposition result]
-- [Substitution and replanning result]
-- [Gap-reporting result]
+- **Intent decomposition:** The agent infers implicit constraints correctly.
+- **Cart completeness:** Three-item carts assemble without stopping early.
+- **Substitution replanning:** Out-of-stock substitutions work with budget rechecking.
+- **Gap reporting:** Reports include an actionable recommendation, closest available option, and minimum viable budget.
+- **Budget adherence:** The hard budget holds across all tested scenarios.
+- **Side-by-side comparison:** The UI makes the value of enrichment visible against the same raw catalog.
 
 ### Known Limitations
 
@@ -127,9 +131,11 @@ The cart agent consumes only EnrichedIndex, never raw CSV data. This makes enric
 - Real-time inventory integration
 - Scalable vector retrieval for larger catalogs
 
+See [Production Optimization Roadmap](docs/PRODUCTION_OPTIMIZATION_ROADMAP.md) for the path from $0.50 to $0.05 per cart.
+
 ## Related Work
 
-**Placeholder: document the post-hackathon catalog-readiness integration here without naming prior-employment products or companies.** The integration will consume enriched catalog output through EnrichmentProvider.
+The enrichment module is a compressed version of [RIA (Retail Intelligence Agent)](https://github.com/ak-aibuilder/ria-mvp), a standalone catalog readiness tool. Post-hackathon, Forage will consume RIA's output through the EnrichmentProvider interface.
 
 ## Built For
 

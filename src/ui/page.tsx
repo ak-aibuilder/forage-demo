@@ -139,7 +139,7 @@ export default function ForagePage() {
             {result && !isLoading && <div className="enriched-result-stack">
               <ConstraintChips entries={result.decision_log} />
               <CartDisplay cart={result} products={catalog} />
-              <GapReport gaps={result.gap_report} />
+              <GapReport gaps={result.gap_report} products={catalog} />
               <DecisionLog entries={result.decision_log} />
               <QueryStats cart={result} />
               <ExportButton cart={result} />

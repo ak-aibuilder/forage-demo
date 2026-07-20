@@ -5,12 +5,53 @@ interface CartDisplayProps {
   products: EnrichedProduct[];
 }
 
+interface SubstitutionInfo {
+  originalProductId: string;
+  originalTitle: string;
+}
+
 function stripHtml(value: string): string {
   return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function Values({ values }: { values: string[] }) {
   return values.length ? <div className="tag-list">{values.map((value) => <span key={value}>{value}</span>)}</div> : <span className="attribute-empty">None recorded</span>;
+}
+
+function substitutionForItem(cart: CartOutput, productId: string, products: EnrichedProduct[]): SubstitutionInfo | undefined {
+  const addIndex = cart.decision_log.findIndex((entry) => entry.tool_called === "add_to_cart" && entry.inputs.product_id === productId);
+  if (addIndex < 0) return undefined;
+
+  // A substitute is the next item added after an explicit substitute lookup. Looking
+  // only at the latest stockout is too broad: later items can mention a substitute
+  // in their justification while still being ordinary, in-stock selections.
+  const previousAddIndex = cart.decision_log
+    .slice(0, addIndex)
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) => entry.tool_called === "add_to_cart")
+    .at(-1)?.index ?? -1;
+  const substituteLookupIndex = cart.decision_log
+    .slice(previousAddIndex + 1, addIndex)
+    .map((entry, index) => ({ entry, index: previousAddIndex + 1 + index }))
+    .filter(({ entry }) => entry.tool_called === "find_substitutes" && typeof entry.inputs.product_id === "string")
+    .at(-1)?.index;
+  if (substituteLookupIndex === undefined) return undefined;
+
+  const substituteLookup = cart.decision_log[substituteLookupIndex];
+  const originalProductId = substituteLookup.inputs.product_id;
+  if (typeof originalProductId !== "string" || originalProductId === productId) return undefined;
+
+  const hadStockout = cart.decision_log
+    .slice(previousAddIndex + 1, substituteLookupIndex)
+    .some((entry) => entry.tool_called === "check_inventory"
+      && entry.inputs.product_id === originalProductId
+      && entry.outputs.in_stock === false);
+  if (!hadStockout) return undefined;
+
+  return {
+    originalProductId,
+    originalTitle: products.find((product) => product.handle === originalProductId)?.title ?? originalProductId,
+  };
 }
 
 export function CartDisplay({ cart, products }: CartDisplayProps) {
@@ -30,6 +71,7 @@ export function CartDisplay({ cart, products }: CartDisplayProps) {
       {cart.items.length > 0 ? <div className="item-list">
         {cart.items.map((item) => {
           const product = products.find((candidate) => candidate.handle === item.product_id);
+          const substitution = substitutionForItem(cart, item.product_id, products);
           return (
           <article className="cart-item" key={item.product_id}>
             <div className="cart-item-summary">
@@ -38,6 +80,7 @@ export function CartDisplay({ cart, products }: CartDisplayProps) {
                 : <div className="result-thumbnail result-thumbnail-empty" aria-hidden="true">{item.title.charAt(0)}</div>}
               <div className="cart-item-copy">
                 <div className="item-topline"><span className="slot-label">{item.slot}</span><strong>${item.price.toFixed(2)}</strong></div>
+                {substitution && <div className="substitution-indicator"><span>Substituted</span><small>Original: {substitution.originalTitle} was out of stock</small></div>}
                 <h3>{item.title}</h3>
                 <p>{item.justification}</p>
               </div>
