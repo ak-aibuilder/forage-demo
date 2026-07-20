@@ -20,6 +20,9 @@ export function decomposeShoppingGoal(goal: string, budgetLimit: number): Shoppi
   addUnique(explicitConstraints, `$${statedBudget?.[1] ?? budgetLimit} maximum`);
 
   if (/cotton/.test(normalized)) addUnique(explicitConstraints, "cotton");
+  if (/waterproof/.test(normalized)) addUnique(explicitConstraints, "waterproof");
+  if (/formal/.test(normalized)) addUnique(explicitConstraints, "formal");
+  if (/evening/.test(normalized)) addUnique(explicitConstraints, "evening occasion");
   if (/business casual/.test(normalized)) addUnique(explicitConstraints, "business casual");
   if (/job interview|interview/.test(normalized)) addUnique(explicitConstraints, "job interview");
   if (/outfit/.test(normalized)) addUnique(explicitConstraints, "multi-item outfit");
@@ -31,6 +34,7 @@ export function decomposeShoppingGoal(goal: string, budgetLimit: number): Shoppi
   if (/pants|trousers|bottom/.test(normalized)) addUnique(requiredSlots, "bottom");
   if (/skirt/.test(normalized)) addUnique(requiredSlots, "skirt");
   if (/shoes|footwear|sneakers|high tops/.test(normalized)) addUnique(requiredSlots, "footwear");
+  if (/gown/.test(normalized)) addUnique(requiredSlots, "gown");
 
   if (/job interview|interview/.test(normalized)) {
     for (const constraint of ["professional", "polished", "non-formal", "neutral styling"]) addUnique(implicitConstraints, constraint);

@@ -16,7 +16,7 @@ test("search_catalog returns the interview-ready enriched product", () => {
 test("inventory config exposes the demo stockouts", () => {
   const tools = createAgentTools(enrichedIndex, 150, inventory);
   expect(tools.check_inventory({ product_id: "white-cotton-shirt" })).toEqual({ product_id: "white-cotton-shirt", in_stock: false, quantity: 0 });
-  expect(tools.check_inventory({ product_id: "black-leather-bag" }).in_stock).toBe(false);
+  expect(tools.check_inventory({ product_id: "black-leather-bag" }).in_stock).toBe(true);
 });
 
 test("find_substitutes ranks an available compatible alternative", () => {

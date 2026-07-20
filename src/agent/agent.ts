@@ -1,8 +1,8 @@
-import type { CartOutput, EnrichedIndex } from "../shared/types.js";
+import type { CartOutput, EnrichedIndex, EnrichedProduct } from "../shared/types.js";
 import { decomposeShoppingGoal, type ShoppingIntent } from "./decision-log.js";
 import { createGapReport } from "./gap-reporter.js";
 import { createAgentTools } from "./tools/index.js";
-import type { InventoryConfig } from "./tools/check-inventory.js";
+import { inventoryQuantity, type InventoryConfig } from "./tools/check-inventory.js";
 
 export const AGENT_SYSTEM_PROMPT = `You are a shopping agent that composes multi-item carts from structured product data. You do not search; you solve.
 
@@ -46,8 +46,40 @@ const SLOT_ALIASES: Record<string, string[]> = {
   bottom: ["bottom", "pants", "trousers"],
   skirt: ["skirt", "bottom"],
   footwear: ["footwear", "shoes", "sneakers", "high tops"],
+  gown: ["gown", "dress"],
   item: ["item"],
 };
+
+interface AgentRunContext {
+  inventoryStatus: Map<string, boolean>;
+  substituteOrigins: Map<string, string>;
+  lastStockout?: string;
+  lastSubstitution?: { original: string; selected: string };
+  previousSearchWasEmpty: boolean;
+}
+
+const FILTER_KEYS = ["use_case", "aesthetic_style", "price_min", "price_max", "functional_attributes", "keyword"] as const;
+
+function searchFilterChanges(previous: Record<string, unknown>, current: Record<string, unknown>): number {
+  return FILTER_KEYS.filter((key) => JSON.stringify(previous[key]) !== JSON.stringify(current[key])).length;
+}
+
+function productSearchText(product: EnrichedProduct): string {
+  return [product.title, product.bodyHtml, ...product.tags, ...product.materialComposition, ...product.useCaseTags, ...product.aestheticStyle, ...product.functionalAttributes]
+    .join(" ")
+    .toLowerCase()
+    .replace(/_/g, " ");
+}
+
+function productCategory(product: EnrichedProduct): string {
+  const text = `${product.title} ${product.bodyHtml}`.toLowerCase();
+  if (/bag/.test(text)) return "bag";
+  if (/jacket|tuxedo|jumper/.test(text)) return "outer layer";
+  if (/shirt|blouse|top|tee/.test(text)) return "top";
+  if (/skirt|pants|trousers/.test(text)) return "bottom";
+  if (/shoe|high tops|sneaker/.test(text)) return "footwear";
+  return "other";
+}
 
 const satisfiesSlot = (required: string, actual: string): boolean => {
   const normalized = actual.trim().toLowerCase();
@@ -101,9 +133,11 @@ export class CartAgent {
 
     const input: ResponseInputItem[] = [{
       role: "user",
-      content: `Shopping goal: ${goal}\nHard budget: $${this.budgetLimit}\nRequired slots: ${intent.requiredSlots.join(", ")}\nRecorded explicit constraints: ${intent.explicitConstraints.join(", ")}\nRecorded implicit constraints: ${intent.implicitConstraints.join(", ")}\nUse one search per required slot, check inventory before adding, and fill every slot. For the initial search for each slot, set use_case, aesthetic_style, and functional_attributes to null; use the literal required slot name as keyword, such as shirt, jacket for outer layer, or bag; and apply the remaining budget as price_max. Evaluate the returned enriched attributes against the recorded constraints. Use a structured filter only when an exact normalized tag appeared in an earlier tool result. If a search is empty, retry once by setting exactly one filter to null.`,
+      content: `Shopping goal: ${goal}\nHard budget: $${this.budgetLimit}\nRequired slots: ${intent.requiredSlots.join(", ")}\nRecorded explicit constraints: ${intent.explicitConstraints.join(", ")}\nRecorded implicit constraints: ${intent.implicitConstraints.join(", ")}\nUse one search per required slot, check inventory before adding, and fill every slot. For the initial search for each slot, set use_case, aesthetic_style, and functional_attributes to null; use the literal required category as keyword, such as shirt, jacket for outer layer, bag, or gown; and apply the remaining budget as price_max. Evaluate the returned enriched attributes against the recorded constraints. Use a structured filter only when an exact normalized tag appeared in an earlier tool result. If a search is empty, retry once by relaxing exactly one filter. When check_inventory reports a stockout, call find_substitutes for the original product, check the selected substitute's inventory, reserve enough budget for unfilled slots, and recheck the full cart immediately after adding the substitute.`,
     }];
     let toolCallCount = 0;
+    let previousSearchArgs: Record<string, unknown> | undefined;
+    const context: AgentRunContext = { inventoryStatus: new Map(), substituteOrigins: new Map(), previousSearchWasEmpty: false };
 
     while (toolCallCount < this.maxToolCalls) {
       const response = await this.transport({
@@ -118,7 +152,7 @@ export class CartAgent {
       input.push(...response.output);
 
       if (calls.length === 0) {
-        this.reportMissingSlots(tools.state, intent, "The agent ended before this required slot was fulfilled.");
+        this.reportMissingSlots(tools.state, intent, goal, "The agent ended before this required slot was fulfilled.");
         return tools.state.output();
       }
 
@@ -126,31 +160,37 @@ export class CartAgent {
         if (toolCallCount >= this.maxToolCalls) break;
         const name = String(call.name ?? "");
         const args = parseArguments(call);
-        const reasoning = `Use ${name} to advance the required ${intent.requiredSlots.join(", ")} slots while preserving the shared budget.`;
+        const reasoning = this.toolReasoning(name, args, intent, context, previousSearchArgs);
         tools.state.setNextToolReasoning(reasoning);
         let result: unknown;
         try {
-          result = this.dispatchTool(tools, name, args);
+          result = this.dispatchTool(tools, name, args, context);
         } catch (error) {
           result = { error: error instanceof Error ? error.message : "Unknown tool error" };
         }
         toolCallCount += 1;
 
+        if (name === "search_catalog" && Array.isArray(result)) {
+          context.previousSearchWasEmpty = result.length === 0;
+          previousSearchArgs = args;
+        }
+
         if (name === "add_to_cart" && !(typeof result === "object" && result !== null && "error" in result) && toolCallCount < this.maxToolCalls) {
-          tools.state.setNextToolReasoning("Inspect the authoritative cart total and budget remaining immediately after the cart addition.");
+          const swap = context.lastSubstitution;
+          tools.state.setNextToolReasoning(swap
+            ? `Recheck the full-cart budget after replacing ${swap.original} with ${swap.selected}; reconsider dependent choices if the revised total conflicts with the hard limit.`
+            : "Inspect the authoritative cart total and budget remaining immediately after the cart addition.");
           const summary = tools.get_cart_summary();
           toolCallCount += 1;
           result = { ...(result as Record<string, unknown>), post_add_cart_summary: summary };
+          context.lastSubstitution = undefined;
         }
 
         input.push({ type: "function_call_output", call_id: call.call_id, output: JSON.stringify(result) });
       }
     }
 
-    this.reportMissingSlots(tools.state, intent, `The ${this.maxToolCalls}-tool-call safety limit was reached.`);
-    if (tools.state.output().gap_report.length === 0) {
-      tools.state.addGap(createGapReport("agent execution", tools.state.budgetRemaining, `The ${this.maxToolCalls}-tool-call safety limit was reached after the cart was assembled.`));
-    }
+    this.reportMissingSlots(tools.state, intent, goal, `The ${this.maxToolCalls}-tool-call safety limit was reached.`);
     return tools.state.output();
   }
 
@@ -165,19 +205,94 @@ export class CartAgent {
     for (const constraint of intent.implicitConstraints) state.addConstraint({ constraint, status: "inferred", notes: "Defensibly inferred from the occasion and context." });
   }
 
-  private reportMissingSlots(state: ReturnType<typeof createAgentTools>["state"], intent: ShoppingIntent, reason: string): void {
+  private reportMissingSlots(state: ReturnType<typeof createAgentTools>["state"], intent: ShoppingIntent, goal: string, reason: string): void {
     const items = state.summary().items;
     for (const slot of intent.requiredSlots) {
-      if (!items.some((item) => satisfiesSlot(slot, item.slot))) state.addGap(createGapReport(slot, state.budgetRemaining, reason));
+      if (!items.some((item) => satisfiesSlot(slot, item.slot))) {
+        const missing = this.gapLabel(goal, slot);
+        state.addGap(createGapReport(missing, state.budgetRemaining, reason, this.findClosestProduct(goal, slot, items.map((item) => item.product_id))));
+      }
     }
   }
 
-  private dispatchTool(tools: ReturnType<typeof createAgentTools>, name: string, args: Record<string, unknown>): unknown {
+  private toolReasoning(name: string, args: Record<string, unknown>, intent: ShoppingIntent, context: AgentRunContext, previousSearchArgs?: Record<string, unknown>): string {
+    const productId = String(args.product_id ?? "");
+    if (name === "find_substitutes") return `Replan the ${productId} selection after its stockout, preserving use-case compatibility and the budget needed for every remaining slot.`;
+    if (name === "check_inventory" && context.substituteOrigins.has(productId)) return `Verify that substitute ${productId} is available before replacing ${context.substituteOrigins.get(productId)}.`;
+    if (name === "add_to_cart" && context.substituteOrigins.has(productId)) return `Select ${productId} as the available substitute for ${context.substituteOrigins.get(productId)} and preserve the remaining-slot budget.`;
+    if (name === "search_catalog" && context.previousSearchWasEmpty && previousSearchArgs) {
+      const changes = searchFilterChanges(previousSearchArgs, args);
+      return `Retry the zero-result catalog query with ${changes} changed filter${changes === 1 ? "" : "s"}; exactly one safely relaxed constraint is required before reporting a gap.`;
+    }
+    return `Use ${name} to advance the required ${intent.requiredSlots.join(", ")} slots while preserving the shared budget.`;
+  }
+
+  private gapLabel(goal: string, slot: string): string {
+    const normalized = goal.toLowerCase();
+    if (/formal/.test(normalized) && /evening/.test(normalized) && /gown|outfit/.test(normalized)) return "formal evening gown";
+    if (/waterproof/.test(normalized)) return `waterproof ${slot}`;
+    return slot;
+  }
+
+  private findClosestProduct(goal: string, slot: string, excludedIds: string[]): { title: string; price: number } | undefined {
+    const normalizedGoal = goal.toLowerCase();
+    const tokens = normalizedGoal.match(/[a-z]+/g)?.filter((token) => !["a", "an", "and", "for", "under", "the", "with", "budget"].includes(token)) ?? [];
+    const candidates = this.index.products
+      .filter((product) => !excludedIds.includes(product.handle) && inventoryQuantity(this.inventory, product.handle) > 0)
+      .map((product) => {
+        const text = productSearchText(product);
+        let score = tokens.filter((token) => text.includes(token)).length;
+        if (/formal|evening/.test(normalizedGoal) && /formal|evening/.test(text)) score += 8;
+        if (/waterproof/.test(normalizedGoal) && /waterproof|wet weather/.test(text)) score += 8;
+        if ((SLOT_ALIASES[slot] ?? [slot]).some((alias) => text.includes(alias))) score += 4;
+        return { product, score };
+      })
+      .sort((left, right) => right.score - left.score || left.product.price - right.product.price);
+    const closest = candidates[0]?.product;
+    return closest ? { title: closest.title, price: closest.price } : undefined;
+  }
+
+  private dispatchTool(tools: ReturnType<typeof createAgentTools>, name: string, args: Record<string, unknown>, context: AgentRunContext): unknown {
     switch (name) {
       case "search_catalog": return tools.search_catalog(args as unknown as Parameters<typeof tools.search_catalog>[0]);
-      case "check_inventory": return tools.check_inventory(args as unknown as Parameters<typeof tools.check_inventory>[0]);
-      case "find_substitutes": return tools.find_substitutes(args as unknown as Parameters<typeof tools.find_substitutes>[0]);
-      case "add_to_cart": return tools.add_to_cart(args as unknown as Parameters<typeof tools.add_to_cart>[0]);
+      case "check_inventory": {
+        const result = tools.check_inventory(args as unknown as Parameters<typeof tools.check_inventory>[0]);
+        context.inventoryStatus.set(result.product_id, result.in_stock);
+        if (!result.in_stock) context.lastStockout = result.product_id;
+        return result;
+      }
+      case "find_substitutes": {
+        const result = tools.find_substitutes(args as unknown as Parameters<typeof tools.find_substitutes>[0]);
+        const original = String(args.product_id ?? context.lastStockout ?? "");
+        const originalProduct = this.index.products.find((product) => product.handle === original);
+        for (const product of result) {
+          if (!originalProduct || productCategory(product) === productCategory(originalProduct)) context.substituteOrigins.set(product.handle, original);
+        }
+        return result;
+      }
+      case "add_to_cart": {
+        const productId = String(args.product_id ?? "");
+        if (context.inventoryStatus.get(productId) !== true) {
+          const error = context.inventoryStatus.get(productId) === false
+            ? `Cannot add ${productId}; its inventory check reported out of stock.`
+            : `Cannot add ${productId} before a successful inventory check.`;
+          tools.state.recordTrace({ toolName: "add_to_cart", inputs: args, outputs: {}, status: "failure", latencyMs: 0, error });
+          throw new Error(error);
+        }
+        const result = tools.add_to_cart(args as unknown as Parameters<typeof tools.add_to_cart>[0]);
+        const unresolved = context.lastStockout ? this.index.products.find((product) => product.handle === context.lastStockout) : undefined;
+        const selected = this.index.products.find((product) => product.handle === productId);
+        const original = context.substituteOrigins.get(productId)
+          ?? (unresolved && selected && productCategory(unresolved) === productCategory(selected) ? unresolved.handle : undefined);
+        if (original) {
+          context.lastSubstitution = { original, selected: productId };
+          context.lastStockout = undefined;
+          for (const [candidate, candidateOriginal] of context.substituteOrigins) {
+            if (candidateOriginal === original) context.substituteOrigins.delete(candidate);
+          }
+        }
+        return result;
+      }
       case "get_cart_summary": return tools.get_cart_summary();
       default:
         tools.state.recordTrace({ toolName: name || "unknown_tool", inputs: args, outputs: {}, status: "failure", latencyMs: 0, error: "Unknown tool requested." });
