@@ -49,12 +49,12 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
 .scenario-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
 .scenario-button, .secondary-button { color: var(--leaf); border: 1px solid #bdd0c0; background: #f5faf5; border-radius: 999px; padding: 8px 11px; font-size: 12px; font-weight: 700; }
 .scenario-button:hover, .secondary-button:hover { background: var(--leaf-soft); }
+.example-queries, .nudge-suggestions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.example-queries .secondary-button { font-size: 11px; padding: 6px 9px; }
 .goal-label { display: block; font-size: 13px; font-weight: 800; margin-bottom: 8px; }
 .goal-panel textarea { width: 100%; resize: vertical; min-height: 112px; border: 1px solid #bfc2b8; border-radius: 12px; padding: 13px; color: var(--ink); background: #fff; line-height: 1.45; }
 .goal-panel textarea:focus { outline: 3px solid #dce8dc; border-color: var(--leaf); }
 .goal-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; }
-.inventory-toggle { color: var(--muted); display: flex; align-items: center; gap: 7px; font-size: 13px; }
-.inventory-toggle input { accent-color: var(--leaf); }
 .primary-button { border: 0; border-radius: 10px; padding: 12px 16px; color: #fff; background: var(--leaf); font-weight: 800; }
 .primary-button:hover { background: #244b36; }
 
@@ -134,6 +134,9 @@ button:disabled { cursor: not-allowed; opacity: 0.6; }
 .gap-product-card strong { color: var(--ink); display: block; font-size: 12px; line-height: 1.25; }
 .gap-product-card span { margin-top: 4px; }
 .gap-copy { flex: 1; min-width: 0; }
+.off-topic-nudge { background: #f3f6f1; border: 1px solid #cbd8cc; border-radius: 18px; box-shadow: var(--shadow); padding: 26px; }
+.off-topic-nudge h2 { font-family: Georgia, "Times New Roman", serif; font-size: 27px; letter-spacing: -0.7px; line-height: 1.05; margin: 9px 0 12px; }
+.off-topic-nudge p { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 0; }
 .trace-summary { align-items: center; cursor: pointer; display: flex; justify-content: space-between; list-style: none; }
 .trace-summary::-webkit-details-marker, .raw-json-toggle summary::-webkit-details-marker { display: none; }
 .trace-summary > span:first-child { display: grid; gap: 6px; }

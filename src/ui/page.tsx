@@ -12,16 +12,25 @@ import { ExportButton } from "./components/export-button";
 import { GapReport } from "./components/gap-report";
 import { GoalInput } from "./components/goal-input";
 import { Loading } from "./components/loading";
+import { OffTopicNudge } from "./components/off-topic-nudge";
 import { QueryStats } from "./components/query-stats";
 import { RawResults } from "./components/raw-results";
 
 const INITIAL_GOAL = "business casual outfit for a job interview, budget $150";
+
+interface OffTopicResponse {
+  error: "off_topic";
+  message: string;
+  suggestions: string[];
+  requestId?: string;
+}
 
 export default function ForagePage() {
   const [goal, setGoal] = useState(INITIAL_GOAL);
   const [allInStock, setAllInStock] = useState(true);
   const [result, setResult] = useState<CartOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [offTopic, setOffTopic] = useState<OffTopicResponse | null>(null);
   const [errorRequestId, setErrorRequestId] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [catalog, setCatalog] = useState<EnrichedProduct[]>([]);
@@ -52,24 +61,13 @@ export default function ForagePage() {
 
   async function composeCart(): Promise<void> {
     setError(null);
+    setOffTopic(null);
     setErrorRequestId(undefined);
     setResult(null);
     setIsLoading(true);
     setHasRun(true);
     setRawResults([]);
     setRawError(undefined);
-    setIsRawLoading(true);
-    void fetch("/api/raw-search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ goal }),
-    }).then(async (response) => {
-      const payload = await response.json() as { results?: RawSearchResult[]; error?: string };
-      if (!response.ok || !Array.isArray(payload.results)) throw new Error(payload.error ?? "Raw catalog search failed.");
-      setRawResults(payload.results);
-    }).catch((caught) => {
-      setRawError(caught instanceof Error ? caught.message : "Raw catalog search failed.");
-    }).finally(() => setIsRawLoading(false));
 
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 125_000);
@@ -81,17 +79,34 @@ export default function ForagePage() {
         signal: controller.signal,
       });
       const responseText = await response.text();
-      let payload: CartOutput | { error?: string; requestId?: string };
+      let payload: CartOutput | OffTopicResponse | { error?: string; requestId?: string };
       try {
         payload = JSON.parse(responseText) as CartOutput | { error?: string; requestId?: string };
       } catch {
         throw new Error("The cart service returned an unreadable response. Please try again.");
+      }
+      if ("error" in payload && payload.error === "off_topic" && "message" in payload && typeof payload.message === "string" && "suggestions" in payload && Array.isArray(payload.suggestions)) {
+        setOffTopic({ error: "off_topic", message: payload.message, suggestions: payload.suggestions, requestId: payload.requestId });
+        setHasRun(false);
+        return;
       }
       if (!response.ok || !("items" in payload)) {
         if ("requestId" in payload) setErrorRequestId(payload.requestId);
         throw new Error("error" in payload && payload.error ? payload.error : "The cart agent returned an invalid response.");
       }
       setResult(payload);
+      setIsRawLoading(true);
+      void fetch("/api/raw-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goal }),
+      }).then(async (rawResponse) => {
+        const rawPayload = await rawResponse.json() as { results?: RawSearchResult[]; error?: string };
+        if (!rawResponse.ok || !Array.isArray(rawPayload.results)) throw new Error(rawPayload.error ?? "Raw catalog search failed.");
+        setRawResults(rawPayload.results);
+      }).catch((caught) => {
+        setRawError(caught instanceof Error ? caught.message : "Raw catalog search failed.");
+      }).finally(() => setIsRawLoading(false));
     } catch (caught) {
       const message = caught instanceof DOMException && caught.name === "AbortError"
         ? "The request took too long. Please try again."
@@ -108,11 +123,18 @@ export default function ForagePage() {
     setAllInStock(nextAllInStock);
     setResult(null);
     setError(null);
+    setOffTopic(null);
     setErrorRequestId(undefined);
     setRawResults([]);
     setRawError(undefined);
     setIsRawLoading(false);
     setHasRun(false);
+  }
+
+  function handleGoalChange(nextGoal: string): void {
+    setGoal(nextGoal);
+    setAllInStock(true);
+    setOffTopic(null);
   }
 
   return (
@@ -121,7 +143,7 @@ export default function ForagePage() {
       <div className="hero-rule" />
       <div className="input-stack" id="top">
         <CatalogBrowser products={catalog} isLoading={isCatalogLoading} error={catalogError} />
-        <GoalInput goal={goal} allInStock={allInStock} isLoading={isLoading} onGoalChange={setGoal} onAllInStockChange={setAllInStock} onSubmit={() => void composeCart()} onScenario={selectScenario} />
+        <GoalInput goal={goal} isLoading={isLoading} onGoalChange={handleGoalChange} onSubmit={() => void composeCart()} onScenario={selectScenario} />
       </div>
       <section className="comparison-section" aria-labelledby="comparison-heading">
         <header className="comparison-header"><div className="eyebrow">Side-by-side result</div><h2 id="comparison-heading">Same goal, same products, different data</h2><p>Compare a literal raw-catalog match with a constraint-aware composed cart.</p></header>
@@ -134,8 +156,9 @@ export default function ForagePage() {
             <h3 id="enriched-results-heading">Agentic composition (GPT-5.6 Sol)</h3>
             <p className="comparison-benefit">Constraint-aware selection, inventory replanning, and full-cart budget control.</p>
             {isLoading && <Loading />}
+            {offTopic && !isLoading && <OffTopicNudge message={offTopic.message} suggestions={offTopic.suggestions} isLoading={isLoading} onSuggestion={handleGoalChange} />}
             {error && <ErrorDisplay message={error} requestId={errorRequestId} onRetry={() => void composeCart()} />}
-            {!isLoading && !error && !result && <section className="empty-panel"><div className="eyebrow">Ready to compose</div><h2>Start with a goal.</h2><p>Forage will show the selected items, budget math, tool trace, and any catalog gaps.</p></section>}
+            {!isLoading && !error && !offTopic && !result && <section className="empty-panel"><div className="eyebrow">Ready to compose</div><h2>Start with a goal.</h2><p>Forage will show the selected items, budget math, tool trace, and any catalog gaps.</p></section>}
             {result && !isLoading && <div className="enriched-result-stack">
               <ConstraintChips entries={result.decision_log} />
               <CartDisplay cart={result} products={catalog} />

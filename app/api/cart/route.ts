@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { CartAgent } from "../../../src/agent/index.js";
 import type { InventoryConfig } from "../../../src/agent/tools/check-inventory.js";
 import type { EnrichedIndex } from "../../../src/shared/types.js";
+import { isCommerceGoal } from "../../../src/shared/commerce-goal.js";
 import { publicCartError } from "../../../src/shared/public-cart-error.js";
 import { deriveQueryStats } from "../../../src/shared/query-stats.js";
 
@@ -12,6 +13,16 @@ interface CartRequestBody {
   goal?: unknown;
   allInStock?: unknown;
 }
+
+const OFF_TOPIC_RESPONSE = {
+  error: "off_topic",
+  message: "Forage composes shopping carts from product catalogs. Try a goal like 'business casual outfit for a job interview, budget $150'.",
+  suggestions: [
+    "business casual outfit for a job interview, budget $150",
+    "weekend casual look, keep it under $80",
+    "formal evening outfit under $60",
+  ],
+} as const;
 
 async function runWithTimeout<T>(operation: Promise<T>, timeoutMs: number): Promise<T> {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -31,7 +42,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const body = await request.json() as CartRequestBody;
     const goal = typeof body.goal === "string" ? body.goal.trim() : "";
-    if (!goal) return respond({ error: "Enter a shopping goal before composing a cart.", requestId }, 400);
+    if (!isCommerceGoal(goal)) return respond({ ...OFF_TOPIC_RESPONSE, requestId }, 400);
 
     const root = process.cwd();
     const indexPath = resolve(root, process.env.FORAGE_ENRICHED_INDEX_PATH ?? "data/enriched-index.json");

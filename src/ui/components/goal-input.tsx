@@ -2,10 +2,8 @@
 
 interface GoalInputProps {
   goal: string;
-  allInStock: boolean;
   isLoading: boolean;
   onGoalChange: (goal: string) => void;
-  onAllInStockChange: (allInStock: boolean) => void;
   onSubmit: () => void;
   onScenario: (goal: string, allInStock: boolean) => void;
 }
@@ -13,10 +11,16 @@ interface GoalInputProps {
 const SCENARIOS = [
   { label: "Complete outfit", goal: "business casual outfit for a job interview, budget $150", allInStock: true },
   { label: "Stockout replan", goal: "business casual outfit for a job interview, budget $150", allInStock: false },
-  { label: "Catalog gap", goal: "formal evening gown under $60", allInStock: false },
+  { label: "Catalog gap", goal: "formal evening gown under $60", allInStock: true },
 ];
 
-export function GoalInput({ goal, allInStock, isLoading, onGoalChange, onAllInStockChange, onSubmit, onScenario }: GoalInputProps) {
+const EXAMPLE_QUERIES = [
+  "weekend casual look, keep it under $80",
+  "rainy day outfit with a waterproof jacket, budget $120",
+  "minimalist gift set for a friend, under $100",
+];
+
+export function GoalInput({ goal, isLoading, onGoalChange, onSubmit, onScenario }: GoalInputProps) {
   return (
     <section className="goal-panel" aria-labelledby="goal-heading">
       <div className="eyebrow">Shopping goal</div>
@@ -31,11 +35,12 @@ export function GoalInput({ goal, allInStock, isLoading, onGoalChange, onAllInSt
       </div>
       <label className="goal-label" htmlFor="shopping-goal">What are you trying to buy?</label>
       <textarea id="shopping-goal" value={goal} onChange={(event) => onGoalChange(event.target.value)} placeholder="For example, business casual outfit for a job interview, budget $150" rows={4} disabled={isLoading} />
+      <div className="example-queries" aria-label="More shopping goal examples">
+        {EXAMPLE_QUERIES.map((example) => (
+          <button className="secondary-button" key={example} type="button" onClick={() => onGoalChange(example)} disabled={isLoading}>{example}</button>
+        ))}
+      </div>
       <div className="goal-actions">
-        <label className="inventory-toggle">
-          <input type="checkbox" checked={allInStock} onChange={(event) => onAllInStockChange(event.target.checked)} disabled={isLoading} />
-          <span>All products in stock</span>
-        </label>
         <button className="primary-button" type="button" onClick={onSubmit} disabled={isLoading || !goal.trim()}>
           {isLoading ? "Composing cart..." : "Compose cart"}
         </button>
